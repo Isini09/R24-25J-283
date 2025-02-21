@@ -7,6 +7,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use('/api/enviroment/real-time-data',require('./routes/envDataRoutes'));
+app.use('/api/enviroment',require('./routes/envDataRoutes'));
 
 app.listen(PORT,()=>console.log(`SERVER IS RUNNING ON ${PORT}`));

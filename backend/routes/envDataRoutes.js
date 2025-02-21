@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const {getRealTimeEnvData} = require('../controller/envDataController');
+const {getRealTimeEnvData, getHistoryEnvData} = require('../controller/envDataController');
 
-router.get('/',getRealTimeEnvData);
+router.get('/real-time-data/',getRealTimeEnvData);
+router.get('/history-data/',getHistoryEnvData);
 
 module.exports = router;
