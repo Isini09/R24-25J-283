@@ -3,7 +3,7 @@ const asyncHandler = require('express-async-handler');
 
 const getRealTimeEnvData = asyncHandler(async (req, res) => {
     try {
-        const envDataRef = firebaseDB.ref("liveData"); // ✅ Correct way to reference RTDB
+        const envDataRef = firebaseDB.ref("liveData"); 
         const snapshot = await envDataRef.once("value");
 
         if (!snapshot.exists()) {
