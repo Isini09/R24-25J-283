@@ -1,7 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Pixelify+Sans:wght@400..700&display=swap');
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
 
 
-* {
+/* * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -10,4 +13,4 @@
   body {
     font-family: "Exo 2", sans-serif;
     height: 100vh;
-  }
+  } */
