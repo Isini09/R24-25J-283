@@ -1,5 +1,6 @@
 import React from 'react';
 import '../components/styles/components.css';
+import {Link} from 'react-router-dom';
 
 const UpperPanel = ({ toggleSidePanel }) => {
   return (
@@ -12,7 +13,7 @@ const UpperPanel = ({ toggleSidePanel }) => {
         <li><a href="#view">View</a></li>
         <li><a href="#tools">Tools</a></li>
         <li><a href="#section">Section</a></li>
-        <li><a href="#co2-monitor">CO2 Monitor</a></li>
+        <li><Link to='/carbon-footprint-tracking'>CO2 Monitor</Link></li>
       </ul>
 
       <input type="text" placeholder="Search here" />
