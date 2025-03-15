@@ -1,16 +1,25 @@
-import React from 'react';
-import '../components/styles/sidepanel.css';
+import React from "react";
+import "../components/styles/sidepanel.css";
 
 const SidePanel = ({ isOpen, toggleSidePanel }) => {
   return (
-    <div className='side-panel'
+    <div
+      className="side-panel"
       style={{
-        width: isOpen ? '250px' : '0',
-        transition: 'width 0.3s',
-
+        width: isOpen ? "250px" : "0",
+        transition: "width 0.3s",
       }}
     >
-      <button onClick={toggleSidePanel} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: '10px' }}>
+      <button
+        onClick={toggleSidePanel}
+        style={{
+          background: "none",
+          border: "none",
+          color: "#fff",
+          cursor: "pointer",
+          padding: "10px",
+        }}
+      >
         ✖
       </button>
 
