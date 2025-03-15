@@ -1,7 +1,7 @@
 // import React, { useEffect, useRef } from 'react';
 import React from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
-import './styles/components.css';
+import "./styles/components.css";
 
 const MainContainer = () => {
   // const unityContainerRef = useRef(null);
@@ -10,7 +10,7 @@ const MainContainer = () => {
   //   const script = document.createElement('script');
   //   script.src = `${process.env.REACT_APP_UNITY_URL}/Build/framework.js`;
   //   script.async = true;
-  
+
   //   script.onload = () => {
   //     if (window.createUnityInstance) {
   //       window.createUnityInstance(unityContainerRef.current, {
@@ -33,18 +33,17 @@ const MainContainer = () => {
   //       console.error('createUnityInstance is not defined');
   //     }
   //   };
-  
+
   //   script.onerror = () => {
   //     console.error('Failed to load Unity framework script');
   //   };
-  
+
   //   document.body.appendChild(script);
-  
+
   //   return () => {
   //     document.body.removeChild(script);
   //   };
   // }, []);
-  
 
   // return (
   //   <div>
@@ -59,7 +58,7 @@ const MainContainer = () => {
   //   </div>
   // );
 
-    const { unityProvider } = useUnityContext({
+  const { unityProvider } = useUnityContext({
     loaderUrl: "/unity-build/build.loader.js",
     dataUrl: "/unity-build/webgl.data",
     frameworkUrl: "/unity-build/build.framework.js",
@@ -68,12 +67,12 @@ const MainContainer = () => {
 
   return (
     <div className="main-container">
-      <Unity unityProvider={unityProvider}
-      style={{height:"100vh", width:"100%", position:'fixed'}} />
+      <Unity
+        unityProvider={unityProvider}
+        style={{ height: "100vh", width: "100%", position: "fixed" }}
+      />
     </div>
   );
-
-
 };
 
 export default MainContainer;

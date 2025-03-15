@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import NavBarAdmin from '../../components/NavBarAdmin';
+import NavBarAdmin from "../../components/NavBarAdmin";
 
 const ProductDetails = () => {
   const { batchId } = useParams(); // Get batchId from URL
@@ -103,36 +103,28 @@ const ProductDetails = () => {
 
   return (
     <div className="flex">
-      <NavBarAdmin/>
+      <NavBarAdmin />
       <div className="ml-[250px] mt-[40px] w-screen">
         <div className="font-bold text-2xl mb-[40px]">Product Details</div>
         <div className="flex gap-24">
-        {!editMode ? (
+          {!editMode ? (
             <>
               <div className="flex flex-col gap-3 mb-10">
-              <div className="text-xl font-bold">
-                Batch ID: {product.batchId}
+                <div className="text-xl font-bold">
+                  Batch ID: {product.batchId}
+                </div>
+                <div>Flavor: {product.flavor}</div>
+                <div>Supplier Name: {product.supplierName}</div>
+                <div>Location: {product.location}</div>
+                <div>Moisture Content: {product.moistureContent}%</div>
+                <div>Caffeine Content: {product.caffeineContent}%</div>
               </div>
               <div>
-                Flavor: {product.flavor}
+                <img className="w-[200px] h-[200px]" src={product.qrCode} />
               </div>
               <div>
-                Supplier Name: {product.supplierName}
+                <button onClick={() => setEditMode(true)}>Edit Product</button>
               </div>
-              <div>
-                Location: {product.location}
-              </div>
-              <div>
-                Moisture Content: {product.moistureContent}%
-              </div>
-              <div>
-                Caffeine Content: {product.caffeineContent}%
-              </div>
-              </div>
-              <div>
-              <img className="w-[200px] h-[200px]" src={product.qrCode}/>
-              </div>
-              <div><button onClick={() => setEditMode(true)}>Edit Product</button></div>
             </>
           ) : (
             <form onSubmit={handleUpdateProductDetails}>
@@ -177,16 +169,23 @@ const ProductDetails = () => {
               </button>
             </form>
           )}
-
         </div>
         <div className="flex gap-6">
-          <div className="w-[200px] h-[200px] border border-black rounded-xl">Box 1</div>
-          <div className="w-[200px] h-[200px] border border-black rounded-xl">Box 1</div>
-          <div className="w-[200px] h-[200px] border border-black rounded-xl">Box 1</div>
-          <div className="w-[200px] h-[200px] border border-black rounded-xl">Box 1</div>
+          <div className="w-[200px] h-[200px] border border-black rounded-xl">
+            Box 1
+          </div>
+          <div className="w-[200px] h-[200px] border border-black rounded-xl">
+            Box 1
+          </div>
+          <div className="w-[200px] h-[200px] border border-black rounded-xl">
+            Box 1
+          </div>
+          <div className="w-[200px] h-[200px] border border-black rounded-xl">
+            Box 1
+          </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

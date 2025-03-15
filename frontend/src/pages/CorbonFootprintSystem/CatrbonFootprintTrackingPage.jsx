@@ -1,46 +1,37 @@
-import React from 'react'
-import { Doughnut } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import React from "react";
+import DoughnutChart from "../../components/charts/DoughnutChart";
+import ForecastChart from "../../components/charts/ForecastChart";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-function CatrbonFootprintTrackingPage() {
-
-  const data = {
-    labels: ["Fire Woods", "Electricity", "Waste"],
-    datasets: [
-      {
-        data: [150, 40, 70], 
-        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"], 
-        hoverBackgroundColor: ["#FF4D6D", "#4A90E2", "#FFD700"],
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    cutout: "60%", 
-    plugins: {
-      legend: {
-        position: "top",
-      },
-    },
-  };
-
+function CarbonFootprintTrackingPage() {
   return (
-    <div className='w-full h-screen flex items-center justify-center gap-4 bg-black text-white'>
-  <div className='flex items-center justify-center w-full h-screen'>
-    <div className="w-auto mx-auto">
-      <h2 className="text-2xl font-bold text-center mb-4">Carbon Emission For Month</h2>
-      <Doughnut data={data} options={options} />
+    <div className="w-full h-screen flex items-center justify-center gap-4 bg-black text-white">
+      <div className="flex items-center justify-center w-full h-screen">
+        <div className="w-2/4 mx-auto">
+          {" "}
+          {/* Increased width for the chart container */}
+          <h2 className="text-2xl font-bold text-center mb-4">
+            Carbon Emission For Month
+          </h2>
+          <DoughnutChart />
+        </div>
+      </div>
+
+      <div className="w-full h-screen flex flex-col">
+        <div className="text-center text-3xl font-bold mb-20 mt-10">
+          CONTROL PANEL
+        </div>
+        <div className="w-3/4 mx-auto">
+          {" "}
+          {/* Increased width for the chart container */}
+          <ForecastChart />
+        </div>
+
+        {/* Guidance [warnings, safes, dangers] */}
+
+        {/* Form to add current waste, electricity and firewoods usages */}
+      </div>
     </div>
-  </div>
-
-  
-  <div className='w-full h-screen border border-red-100'>Forecast graph and guide model</div>
-</div>
-
-  )
+  );
 }
 
-export default CatrbonFootprintTrackingPage
+export default CarbonFootprintTrackingPage;
