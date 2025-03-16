@@ -26,13 +26,10 @@ function App() {
       <UpperPanel toggleSidePanel={toggleSidePanel} />
       <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
       <Routes>
-        <Route path="/admin-dashboard" element={<Dashboard />} /> Admin
-        Dashboard
-        <Route path="/product-dashboard" element={<ProductDashboard />} /> Admin
-        Dashboard
+        <Route path="/admin-dashboard" element={<Dashboard />} />
+        <Route path="/product-dashboard" element={<ProductDashboard />} />
         <Route path="/add-product" element={<AddProductForm />} />
-        <Route path="/product/:batchId" element={<ProductDetails />} /> Product
-        Details
+        <Route path="/product/:batchId" element={<ProductDetails />} />
         <Route
           path="/carbon-footprint-tracking"
           element={<CatrbonFootprintTrackingPage />}
