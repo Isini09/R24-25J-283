@@ -2,11 +2,19 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import NavBarAdmin from "../../components/NavBarAdmin";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Register the necessary chart components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const BatchDetails = () => {
   const { batchId } = useParams();
   const [batch, setBatch] = useState(null);
-  const [blockchainData, setBlockchainData] = useState(null); // State for blockchain data
+  const [humidityData, setHumidityData] = useState([]);
+  const [blockchainData, setBlockchainData] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [batchDetails, setBatchDetails] = useState({
     supplierName: "",
@@ -25,6 +33,7 @@ const BatchDetails = () => {
       inputs: [
         { name: "plantType", label: "Type of Plant" },
         { name: "plantDate", label: "Date of Planting" },
+        { name: "humidity", label: "Humidity (%)" },
       ],
     },
     processing: {
@@ -41,6 +50,8 @@ const BatchDetails = () => {
       ],
     },
   };
+
+  
 
   useEffect(() => {
     const fetchBatchDetails = async () => {
@@ -68,10 +79,21 @@ const BatchDetails = () => {
       }
     };
 
+    const fetchHumidityData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/admin/${batchId}/humidity`);
+        setHumidityData(response.data);
+      } catch (error) {
+        console.error("Error fetching humidity data:", error);
+      }
+    };
+
     fetchBatchDetails();
-    fetchBlockchainData(); // Fetch blockchain data when the component mounts
+    fetchBlockchainData();
+    fetchHumidityData();
   }, [batchId]);
 
+  
   const handleBatchDetailChange = (e) => {
     const { name, value } = e.target;
     setBatchDetails({ ...batchDetails, [name]: value });
@@ -91,36 +113,49 @@ const BatchDetails = () => {
   const handleEditStage = (index) => {
     setEditStageMode(true);
     setCurrentStageIndex(index);
-    setStageInputs(stages[index].inputs); // Pre-fill input fields with current stage inputs
+    setSelectedStage(stages[index].stage); // Set selected stage
+    setStageInputs({ ...stages[index].inputs }); // Clone inputs
   };
+  
 
   const handleUpdateStage = async (e) => {
     e.preventDefault();
     if (currentStageIndex === null) return;
-
+  
     try {
       const updatedStage = {
-        stage: selectedStage,
-        inputs: stageInputs,
+        stage: selectedStage, // Keep the existing stage type
+        inputs: stageInputs,  // Updated input values
       };
-      const response = await axios.put(`http://localhost:5000/admin/${batchId}/updatestage/${currentStageIndex}`, updatedStage);
-      setStages(response.data.stages);
+  
+      const response = await axios.put(
+        `http://localhost:5000/admin/${batchId}/updatestage/${currentStageIndex}`,
+        updatedStage
+      );
+  
+      setStages(response.data.stages); // Ensure response returns the full updated array
       setEditStageMode(false);
       setCurrentStageIndex(null);
       setStageInputs({});
+      toast.success("Stage Updated Successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } catch (error) {
+      toast.error("Failed to Update");
       console.error("Error updating stage:", error);
     }
   };
+  
 
   const handleDeleteStage = async (index) => {
     try {
       await axios.delete(`http://localhost:5000/admin/${batchId}/deletestage/${index}`);
       const updatedStages = stages.filter((_, i) => i !== index);
       setStages(updatedStages);
-      alert("Stage deleted successfully!");
+      toast.success("Stage Deleted Successfully!", { position: "top-right", autoClose: 3000 });
     } catch (error) {
-      console.error("Error deleting stage:", error);
+      toast.error("Failed to Delete");
     }
   };
 
@@ -136,30 +171,48 @@ const BatchDetails = () => {
       setStages(response.data.stages);
       setSelectedStage("");
       setStageInputs({});
+      toast.success("Stage Added successfully!", { position: "top-right", autoClose: 3000 });
     } catch (error) {
-      console.error("Error adding stage:", error);
+      toast.error("Failed to Add Updates");
     }
   };
 
-  const handleUpdateBatchDetails = async (e) => {
-    e.preventDefault();
-    try {
-      const updatedBatch = await axios.put(`http://localhost:5000/admin/${batchId}`, batchDetails);
-      setBatch(updatedBatch.data);
-      setEditMode(false);
-      alert("Batch details updated successfully!");
-    } catch (error) {
-      console.error("Error updating batch details:", error);
-    }
-  };
+const handleUpdateBatchDetails = async (e) => {
+  e.preventDefault();
+  try {
+    const updatedBatch = await axios.put(`http://localhost:5000/admin/${batchId}`, batchDetails);
+    setBatch(updatedBatch.data);
+    setEditMode(false);
+    toast.success("Batch Updated Successfully!", { position: "top-right", autoClose: 3000 });
+  } catch (error) {
+    toast.error("Failed to Update Batch");
+    console.error("Error updating batch:", error);
+  }
+};
 
   const handleDeleteBatch = async () => {
     try {
       await axios.delete(`http://localhost:5000/admin/${batchId}`);
-      alert("Batch deleted successfully!");
+      toast.success("Batch Deleted Successfully!", { position: "top-right", autoClose: 3000 });
     } catch (error) {
-      console.error("Error deleting batch:", error);
+      toast.error("Failed to Delete Batch");
     }
+  };
+
+  const humidityLabels = humidityData.map((data) => data.stage);
+  const humidityValues = humidityData.map((data) => data.humidity);
+
+  const chartData = {
+    labels: humidityLabels,
+    datasets: [
+      {
+        label: "Humidity (%)",
+        data: humidityValues,
+        backgroundColor: "#4CAF50",
+        borderColor: "#4CAF50",
+        borderWidth: 1,
+      },
+    ],
   };
 
   if (!batch) return <div className="mt-10 text-lg font-bold text-center">Loading...</div>;
@@ -167,7 +220,9 @@ const BatchDetails = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <NavBarAdmin />
+      <ToastContainer /> 
       <div className="ml-[250px] mt-[40px] p-6 w-full">
+
         <h1 className="mb-6 text-3xl font-bold">Batch Details</h1>
         <div className="flex items-start justify-between p-6 bg-white rounded-lg shadow-lg">
           {!editMode ? (
@@ -191,7 +246,7 @@ const BatchDetails = () => {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleUpdateBatchDetails} className="w-1/2">            
+            <form onSubmit={handleUpdateBatchDetails} className="w-1/2">
               <input type="text" name="supplierName" value={batchDetails.supplierName} onChange={handleBatchDetailChange} className="w-full p-2 mb-2 border border-gray-300 rounded-md" />
               <input type="text" name="location" value={batchDetails.location} onChange={handleBatchDetailChange} className="w-full p-2 mb-2 border border-gray-300 rounded-md" />
               <input type="date" name="dateStarted" value={batchDetails.dateStarted} onChange={handleBatchDetailChange} className="w-full p-2 mb-2 border border-gray-300 rounded-md" />
@@ -206,6 +261,7 @@ const BatchDetails = () => {
             </form>
           )}
         </div>
+        
 
         {/* Display Blockchain Data */}
         {blockchainData && (
@@ -271,6 +327,10 @@ const BatchDetails = () => {
           ) : (
             <p className="text-gray-500">No stages available for this batch.</p>
           )}
+        </div>
+        <h2 className="mt-6 text-2xl font-semibold">Humidity Chart</h2>
+        <div className="mt-4">
+          <Bar data={chartData} options={{ responsive: true }} />
         </div>
       </div>
     </div>
