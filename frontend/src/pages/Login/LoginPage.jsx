@@ -1,5 +1,5 @@
 import React from "react";
-import backgroundImage from '../../assets/images/background-image.png';
+import backgroundImage from "../../assets/images/background-image.png";
 import "./login.css";
 
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
     >
       <div className="login-box">
         <form>
-        <div className="form-group">
+          <div className="form-group">
             <input
               type="text"
               className="form-control"
@@ -36,7 +36,9 @@ const Login = () => {
             />
           </div>
           <div className="form-group">
-            <button type="submit" className="btn btn-block">Login</button>
+            <button type="submit" className="btn btn-block">
+              Login
+            </button>
           </div>
         </form>
         <p className="version-text">version 1.0.0</p>

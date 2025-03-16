@@ -6,9 +6,8 @@ const SidePanel = ({ isOpen, toggleSidePanel }) => {
   return (
     <div className='side-panel bg-gradient-to-b from-green-950 to-green-900 via-green-900'
       style={{
-        width: isOpen ? '250px' : '0',
-        transition: 'width 0.3s',
-
+        width: isOpen ? "250px" : "0",
+        transition: "width 0.3s",
       }}
     >
       <button onClick={toggleSidePanel} className='px-5 py-3 font-bold text-white'>

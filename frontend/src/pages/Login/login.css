@@ -3,9 +3,12 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-size: cover; /* Scales the image to cover the entire container */
-  background-repeat: no-repeat; /* Avoids repeating the image */
-  background-position: center; /* Centers the image */
+  background-size: cover;
+  /* Scales the image to cover the entire container */
+  background-repeat: no-repeat;
+  /* Avoids repeating the image */
+  background-position: center;
+  /* Centers the image */
   position: relative;
 }
 
@@ -21,15 +24,15 @@
 }
 
 .login-box {
-  z-index: 2; 
+  z-index: 2;
   background-color: #F0EDED;
   padding: 20px 30px;
   text-align: center;
   height: 550px;
   width: 500px;
   display: flex;
-  flex-direction: column; 
-  justify-content: center; 
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 

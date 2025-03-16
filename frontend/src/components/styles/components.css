@@ -6,7 +6,7 @@
     color: white;
     padding: 10px;
 }
-/* button{
+.upper-panel button{
     background: none;
     border: none;
     color: white;
@@ -14,7 +14,7 @@
     margin-right: 30px;
 }
 
-input{
+.upper-panel input{
     width: 200px;
     height: 20px;
     color: #000;
@@ -23,7 +23,7 @@ input{
     border: none;
     margin-bottom: 10px;
     font-family: inherit;
-} */
+}
 
 ul {
     display: flex; /* Align items horizontally */

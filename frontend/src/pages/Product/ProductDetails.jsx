@@ -7,6 +7,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 // Register the necessary chart components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -237,6 +238,7 @@ const handleUpdateBatchDetails = async (e) => {
                 onClick={() => setEditMode(true)}
               >
                 Edit Batch
+    
               </button>
               <button 
                 className="px-4 py-2 mt-4 ml-4 text-white transition bg-red-600 rounded-lg hover:bg-red-700"
