@@ -17,8 +17,12 @@ const UpperPanel = ({ toggleSidePanel }) => {
         <li>
           <a href="#section">Section</a>
         </li>
+        
         <li>
           <Link to="/carbon-footprint-tracking">CO2 Monitor</Link>
+        </li>
+        <li>
+          <Link to="/harvest">Harvest</Link>
         </li>
       </ul>
 
