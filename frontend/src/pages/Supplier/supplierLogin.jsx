@@ -1,4 +1,3 @@
-// src/SupplierLogin.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -19,10 +18,10 @@ const SupplierLogin = () => {
         password,
       });
 
-      // Handle successful login (e.g., store token, redirect)
+      // Handle successful login
       console.log('Login successful:', response.data);
       localStorage.setItem('token', response.data.token);
-      window.location.href = '/dashboard'; // Adjust the redirect as necessary
+      window.location.href = '/dashboard';
     } catch (err) {
       setError('Login failed. Please check your credentials.');
       console.error('Login error:', err);

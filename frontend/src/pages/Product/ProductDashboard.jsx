@@ -37,7 +37,7 @@ const ProductDashboard = () => {
     try {
       await axios.delete(`http://localhost:5000/admin/${batchId}`);
       toast.success("Batch deleted successfully!");
-      fetchProducts(); // Refresh product list
+      fetchProducts();
     } catch (error) {
       toast.error("Failed to delete batch.");
     }

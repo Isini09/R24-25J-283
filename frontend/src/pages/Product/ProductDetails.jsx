@@ -8,7 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
-// Register the necessary chart components
+// Register the necessary chart
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const BatchDetails = () => {
@@ -266,6 +266,7 @@ const handleUpdateBatchDetails = async (e) => {
         
 
         {/* Display Blockchain Data */}
+
         {blockchainData && (
           <div className="p-6 mt-10 bg-white rounded-lg shadow-lg">
             <h2 className="text-2xl font-semibold">Blockchain Data</h2>
