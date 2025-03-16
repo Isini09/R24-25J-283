@@ -1,5 +1,5 @@
 const { createClient } = require("@supabase/supabase-js");
-require("dotenv");
+require("dotenv").config();
 
 const database = createClient(
   process.env.DATABASE_URL,

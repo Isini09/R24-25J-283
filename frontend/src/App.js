@@ -9,6 +9,9 @@ import AddProductForm from "./pages/Product/AddProduct";
 import CatrbonFootprintTrackingPage from "./pages/CorbonFootprintSystem/CatrbonFootprintTrackingPage";
 import UpperPanel from "./components/UpperPanel";
 import SidePanel from "./components/SidePanel";
+import Harvest from "./pages/HarvestManagement/HarvestManagementPage";
+import { MantineProvider } from '@mantine/core';
+
 
 function App() {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
@@ -18,27 +21,27 @@ function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-      </Routes>
-      <UpperPanel toggleSidePanel={toggleSidePanel} />
-      <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
-      <Routes>
-        <Route path="/admin-dashboard" element={<Dashboard />} /> Admin
-        Dashboard
-        <Route path="/product-dashboard" element={<ProductDashboard />} /> Admin
-        Dashboard
-        <Route path="/add-product" element={<AddProductForm />} />
-        <Route path="/product/:batchId" element={<ProductDetails />} /> Product
-        Details
-        <Route
-          path="/carbon-footprint-tracking"
-          element={<CatrbonFootprintTrackingPage />}
-        />
-      </Routes>
-    </Router>
+
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+        <UpperPanel toggleSidePanel={toggleSidePanel} />
+        <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
+        <Routes>
+          <Route path="/admin-dashboard" element={<Dashboard />} />
+          <Route path="/product-dashboard" element={<ProductDashboard />} />
+          <Route path="/add-product" element={<AddProductForm />} />
+          <Route path="/product/:batchId" element={<ProductDetails />} />
+          <Route
+            path="/carbon-footprint-tracking"
+            element={<CatrbonFootprintTrackingPage />}
+          />
+          <Route path="/harvest" element={<Harvest />} />
+        </Routes>
+      </Router>
+
   );
 }
 
