@@ -20,7 +20,7 @@ const ProductDashboard = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin");
+      const response = await axios.get("http://localhost:5000/admin");
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -38,7 +38,7 @@ const ProductDashboard = () => {
   const handleDelete = async (batchId) => {
     try {
       // Use the correct route `/api/admin/:batchId` without `/delete`
-      await axios.delete(`http://localhost:5000/api/admin/${batchId}`);
+      await axios.delete(`http://localhost:5000/admin/${batchId}`);
       fetchProducts(); // Refresh the list after delete
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -64,13 +64,13 @@ const ProductDashboard = () => {
           <div className="flex items-center justify-between mb-10">
             <div className="px-4 py-1 border border-black rounded-full">
               <div className="flex h-[40px] w-[400px] gap-3 ">
-                <input className="px-3 border-none bg-inherit focus:bg-inherit"
+                <input className="w-full px-3 focus:outline-none"
                 type="text"
                 placeholder="Search products..."
                 value={search}
                 onChange={handleSearchChange}
                 />
-                <FontAwesomeIcon className="mt-auto mb-auto" icon={faSearch}/>
+                <FontAwesomeIcon className="mt-auto mb-auto ml-auto" icon={faSearch}/>
               </div>
             </div>
 
@@ -93,11 +93,13 @@ const ProductDashboard = () => {
               onClick={() => handleProductClick(product.batchId)} // Navigate to Product Details page
             >
               <div className="flex flex-col items-center border border-black py-7 hover:bg-green-900 hover:text-white rounded-xl">
-               <img
-                src={product.qrCode} // Use the QR code URL from the product or fallback to placeholder
-                alt="QR code"
-                className="qr-code"
-              />
+              <div className="w-20 bg-white">
+                <img
+                  src={product.qrCode} // Use the QR code URL from the product or fallback to placeholder
+                  alt="QR code"
+                  className="qr-code"
+                />
+              </div>
               <div className="mt-4 text-2xl font-bold">
                 {product.batchId}
                 
