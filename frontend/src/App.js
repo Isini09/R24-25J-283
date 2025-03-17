@@ -21,18 +21,21 @@ function App() {
 
   return (
     <Router>
-      <UpperPanel toggleSidePanel={toggleSidePanel} />
-      <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
-
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+      </Routes>
+      <UpperPanel toggleSidePanel={toggleSidePanel} />
+      <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
+      <Routes>
         <Route path="/admin-dashboard" element={<Dashboard />} />
         <Route path="/product-dashboard" element={<ProductDashboard />} />
         <Route path="/add-product" element={<AddProductForm />} />
         <Route path="/product/:batchId" element={<ProductDetails />} />
-        <Route path="/carbon-footprint-tracking" element={<CarbonFootprintTrackingPage />} />
-        <Route path="/supplier-login" element={<SupplierLogin />} />
+        <Route
+          path="/carbon-footprint-tracking"
+          element={<CarbonFootprintTrackingPage />}
+        />
         <Route path="/harvest" element={<Harvest />} />
       </Routes>
     </Router>
