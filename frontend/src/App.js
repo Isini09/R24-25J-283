@@ -6,11 +6,11 @@ import ProductDashboard from "./pages/Product/ProductDashboard";
 import Dashboard from "./pages/AdminDashboard/Dashboard";
 import ProductDetails from "./pages/Product/ProductDetails";
 import AddProductForm from "./pages/Product/AddProduct";
-import CatrbonFootprintTrackingPage from "./pages/CorbonFootprintSystem/CatrbonFootprintTrackingPage";
+import CarbonFootprintTrackingPage from "./pages/CorbonFootprintSystem/CatrbonFootprintTrackingPage";
+import SupplierLogin from "./pages/Supplier/supplierLogin";
 import UpperPanel from "./components/UpperPanel";
 import SidePanel from "./components/SidePanel";
 import Harvest from "./pages/HarvestManagement/HarvestManagementPage";
-
 
 function App() {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
@@ -34,12 +34,9 @@ function App() {
         <Route path="/product/:batchId" element={<ProductDetails />} />
         <Route
           path="/carbon-footprint-tracking"
-          element={<CatrbonFootprintTrackingPage />}
+          element={<CarbonFootprintTrackingPage />}
         />
-        <Route
-          path="/harvest"
-          element={<Harvest />}
-        />
+        <Route path="/harvest" element={<Harvest />} />
       </Routes>
     </Router>
   );
