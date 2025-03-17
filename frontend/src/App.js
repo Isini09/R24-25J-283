@@ -9,6 +9,8 @@ import AddProductForm from "./pages/Product/AddProduct";
 import CatrbonFootprintTrackingPage from "./pages/CorbonFootprintSystem/CatrbonFootprintTrackingPage";
 import UpperPanel from "./components/UpperPanel";
 import SidePanel from "./components/SidePanel";
+import Harvest from "./pages/HarvestManagement/HarvestManagementPage";
+
 
 function App() {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
@@ -33,6 +35,10 @@ function App() {
         <Route
           path="/carbon-footprint-tracking"
           element={<CatrbonFootprintTrackingPage />}
+        />
+        <Route
+          path="/harvest"
+          element={<Harvest />}
         />
       </Routes>
     </Router>

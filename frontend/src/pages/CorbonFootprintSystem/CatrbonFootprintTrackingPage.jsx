@@ -4,7 +4,7 @@ import ForecastChart from "../../components/charts/ForecastChart";
 
 function CarbonFootprintTrackingPage() {
   return (
-    <div className="w-full h-screen flex items-center justify-center gap-4 bg-black text-white">
+    <div className="w-full h-screen flex items-center justify-center gap-4 text-white">
       <div className="flex items-center justify-center w-full h-screen">
         <div className="w-2/4 mx-auto">
           {/* Increased width for the chart container */}
