@@ -2,28 +2,26 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NavBarAdmin from "../../components/NavBarAdmin";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { faAdd } from "@fortawesome/free-solid-svg-icons";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash, faAdd, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProductDashboard = () => {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  // Fetch all records
   useEffect(() => {
     fetchProducts();
   }, []);
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin");
+      const response = await axios.get("http://localhost:5000/admin");
       setProducts(response.data);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      toast.error("Error fetching products.");
     }
   };
 
@@ -32,16 +30,16 @@ const ProductDashboard = () => {
   };
 
   const handleProductClick = (batchId) => {
-    navigate(`/product/${batchId}`); // Navigate to the Product Details page
+    navigate(`/product/${batchId}`);
   };
 
   const handleDelete = async (batchId) => {
     try {
-      // Use the correct route `/api/admin/:batchId` without `/delete`
-      await axios.delete(`http://localhost:5000/api/admin/${batchId}`);
-      fetchProducts(); // Refresh the list after delete
+      await axios.delete(`http://localhost:5000/admin/${batchId}`);
+      toast.success("Batch deleted successfully!");
+      fetchProducts();
     } catch (error) {
-      console.error("Error deleting product:", error);
+      toast.error("Failed to delete batch.");
     }
   };
 
@@ -52,70 +50,61 @@ const ProductDashboard = () => {
   return (
     <div className="flex">
       <NavBarAdmin />
-      <div className="ml-[250px] mt-[40px]">
-        <div className="flex">
-          <div className="text-2xl mb-[40px] font-bold">Product Management</div>
-        </div>
-        <div className="flex items-center justify-between mb-10">
-          <div className="px-4 py-1 border border-black rounded-full">
-            <div className="flex h-[40px] w-[400px] gap-3 ">
+      <ToastContainer />
+
+      <div className="ml-[250px] mt-[40px] w-full p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Product Management</h2>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center px-4 py-2 border border-black rounded-full">
               <input
-                className="px-3 border-none bg-inherit focus:bg-inherit"
                 type="text"
                 placeholder="Search products..."
                 value={search}
                 onChange={handleSearchChange}
+                className="w-full focus:outline-none"
               />
-              <FontAwesomeIcon className="mt-auto mb-auto" icon={faSearch} />
+              <FontAwesomeIcon icon={faSearch} />
             </div>
-          </div>
 
-          <div className="flex w-40 h-10 gap-3 px-6 text-white bg-green-900 rounded-full cursor-pointer hover:bg-white hover:text-green-900 hover:border hover:border-green-900">
-            <div onClick={handleAddProduct} className="mt-auto mb-auto">
-              AddProduct
-            </div>
-            <FontAwesomeIcon className="mt-auto mb-auto" icon={faAdd} />
+            <button
+              onClick={handleAddProduct}
+              className="flex items-center px-6 py-2 text-white bg-green-900 rounded-full hover:bg-white hover:text-green-900 hover:border hover:border-green-900"
+            >
+              <span className="mr-2">Add Product</span>
+              <FontAwesomeIcon icon={faAdd} />
+            </button>
           </div>
         </div>
 
-        <div className="grid w-[1225px] grid-cols-5 gap-5">
+        {/* Product List */}
+        <div className="grid grid-cols-5 gap-5">
           {products
-            .filter((product) =>
-              product.batchId.toLowerCase().includes(search.toLowerCase())
-            )
+            .filter((product) => product.batchId.toLowerCase().includes(search.toLowerCase()))
             .map((product) => (
               <div
                 key={product.batchId}
-                className="product-tile"
-                onClick={() => handleProductClick(product.batchId)} // Navigate to Product Details page
+                className="p-6 transition border border-black cursor-pointer rounded-xl hover:bg-green-900 hover:text-white"
+                onClick={() => handleProductClick(product.batchId)}
               >
-                <div className="flex flex-col items-center border border-black py-7 hover:bg-green-900 hover:text-white rounded-xl">
-                  <img
-                    src={product.qrCode} // Use the QR code URL from the product or fallback to placeholder
-                    alt="QR code"
-                    className="qr-code"
-                  />
-                  <div className="mt-4 text-2xl font-bold">
-                    {product.batchId}
+                <div className="flex flex-col items-center">
+                  <img src={product.qrCode} alt="QR Code" className="w-20 bg-white" />
+                  <p className="mt-4 text-xl font-bold">{product.batchId}</p>
 
-                    <div className="flex mt-4 gap-7">
-                      <div
-                        onClick={() => console.log("Update product")}
-                        className="cursor-pointer"
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </div>
+                  <div className="flex mt-4 gap-7">
+                    <button className="text-yellow-500 hover:text-yellow-700">
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
 
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent product click handler
-                          handleDelete(product.batchId);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </div>
-                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(product.batchId);
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   </div>
                 </div>
               </div>
