@@ -21,7 +21,7 @@ function App() {
 
   return (
     <Router>
-      <UpperPanel toggleSidePanel={toggleSidePanel} />
+      
       <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
 
       <Routes>

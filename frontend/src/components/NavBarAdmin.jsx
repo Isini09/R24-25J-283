@@ -4,9 +4,9 @@ import Logo from "../assets/images/logo.png";
 function NavBarAdmin() {
   return (
     <div>
-      <div className="flex flex-col gap-5 bg-gradient-to-b from-green-950 to-green-900 via-green-900 max-w-[250px] h-screen text-white fixed">
+      <div className="flex flex-col gap-5 bg-gradient-to-b from-green-950 to-green-900 via-green-900 w-[220px] h-screen text-white fixed">
         <div className="">
-          <div className="flex gap-2 px-3 py-6 mt-3 mb-2 -ml-1 text-2xl font-bold">
+          <div className="flex gap-2 px-3 py-6 mt-12 mb-2 -ml-1 text-2xl font-bold">
             <img className="w-8 h-8" src={Logo} alt="" />
             <a className="" href="http://localhost:3000/">
               Cyber Seeds
