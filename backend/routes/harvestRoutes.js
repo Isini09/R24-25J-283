@@ -3,11 +3,13 @@ const router = express.Router();
 const {
   harvestDateController,
   updateHarvestDataController,
-  getHarvestDateController,
+  getDatesByIdController,
+  deleteBlockDatabyId,
 } = require("../controller/harvestController");
 
 router.post("/harvest-data", harvestDateController);
-router.get("/harvest-data/:id", updateHarvestDataController);
-router.get("/get-harvest-data", getHarvestDateController);
+router.put("/harvest-data/:id", updateHarvestDataController);
+router.get("/get-harvest-data/:blockId", getDatesByIdController);
+router.delete("/delete-harvest-data/:id", deleteBlockDatabyId);
 
 module.exports = router;
