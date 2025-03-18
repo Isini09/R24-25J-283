@@ -1,15 +1,10 @@
 const database = require("../config/db");
 const asyncHandler = require("express-async-handler");
 
-async function name() {
-  const response = await database.from("EmissionData").select("*");
-  console.log(response);
-}
-name();
 // GET: GET THE DATES OF THE BLOCKS
 const getHarvestDateController = asyncHandler(async (req, res) => {
   try {
-    const { data, error } = await database.from("EmissionData").select("*");
+    const { data, error } = await database.from("BlockData").select("*");
 
     if (error || !data) {
       return res.status(400).json({ error: "Failed to fetch block data!" });
@@ -26,17 +21,22 @@ const harvestDateController = asyncHandler(async (req, res) => {
   try {
     const { blockId, harvestDate, pruningDate } = req.body;
 
-    const { data, error } = await database
-      .from("BlockData")
-      .insert({ blockId, harvestDate, pruningDate });
+    const { statusText, error } = await database.from("BlockData").insert({
+      blockId: blockId,
+      harvestDate: harvestDate,
+      pruningDate: pruningDate,
+    });
 
-    if (error || !data) {
-      return res.status(400).json({ error: "Something went wrong!" });
+    if (error) {
+      return res
+        .status(400)
+        .json({ error: error.message || "Something went wrong!" });
     }
 
-    res.status(200).json({ blockData: data });
-  } catch (error) {
-    res.status(500).json({ error: `Server error! Please check ${error}` });
+    res.status(200).json({ blockData: statusText });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error! Please check." });
   }
 });
 
