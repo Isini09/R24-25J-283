@@ -15,17 +15,26 @@ const AddProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:5000/admin/add", form); // Pass form data
-      toast.success("Product added successfully!", { position: "top-right", autoClose: 3000 });
-      resetForm();
-    } catch (error) {
-      toast.error("Failed to add product!");
-      console.error("Error adding product:", error.response ? error.response.data : error.message);
-      resetForm();
-    }
-  };
+    if (!validateForm()) return;
+      try {
+        const response = await axios.post("http://localhost:5000/admin/add", form); // Pass form data
+        toast.success("Product added successfully!", { position: "top-right", autoClose: 3000 });
+        resetForm();
+      } catch (error) {
+        toast.error("Failed to add product!");
+        console.error("Error adding product:", error.response ? error.response.data : error.message);
+        resetForm();
+      }
+    };
   
+  const validateForm = () => {
+    const { batchId, supplierName, location, dateStarted, status } = form;
+    if (!batchId || !supplierName || !location || !dateStarted || !status) {
+      toast.error("All fields are required!");
+      return false;
+    }
+    return true;
+  };
 
   const resetForm = () => {
     setForm({

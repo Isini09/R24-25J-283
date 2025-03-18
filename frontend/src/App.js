@@ -22,16 +22,16 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-      </Routes>
-      <UpperPanel toggleSidePanel={toggleSidePanel} />
-      <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
-      <Routes>
+        <Route path="/" element={<HomePage />} />
         <Route path="/admin-dashboard" element={<Dashboard />} />
         <Route path="/product-dashboard" element={<ProductDashboard />} />
         <Route path="/add-product" element={<AddProductForm />} />
         <Route path="/product/:batchId" element={<ProductDetails />} />
+      </Routes>
+      <UpperPanel toggleSidePanel={toggleSidePanel} />
+      <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
+      <Routes>
         <Route
           path="/carbon-footprint-tracking"
           element={<CarbonFootprintTrackingPage />}
