@@ -4,13 +4,13 @@ const Harvest = () => {
   const [showHarvest, setShowHarvest] = React.useState(true);
   const [showPrune, setShowPrune] = React.useState(false);
   return (
-    <div>
+    <div className="bg-[#111111] w-full h-screen">
       <div
         style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
-          marginTop: "50px",
+       
         }}
       >
         <h1 style={{ fontSize: 50, color: "white" }}>Harvest Management</h1>

@@ -52,8 +52,8 @@ const ProductDashboard = () => {
       <NavBarAdmin />
       <ToastContainer />
 
-      <div className="ml-[250px] mt-[40px] w-full p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="ml-[250px] mt-[25px] w-full  py-8">
+        <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold">Product Management</h2>
           <div className="flex items-center space-x-4">
             <div className="flex items-center px-4 py-2 border border-black rounded-full">

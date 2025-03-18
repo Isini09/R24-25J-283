@@ -19,9 +19,9 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       <NavBarAdmin />
-      <div className="ml-[250px] mt-[40px]">
+      <div className="ml-[250px] mt-[65px]">
         <div className="text-2xl mb-[40px] font-bold">Dashboard</div>
         <div className="flex gap-6">
           <div className="border-2 rounded-xl border-black w-[350px] h-[200px] shadow-black shadow-sm text-xl">
