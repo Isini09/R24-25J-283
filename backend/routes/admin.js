@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Batch = require('../models/batchModel'); // Adjust the path as necessary
 const QRCode = require('qrcode'); 
-const { web3, contract } = require('../product-passport/src/utils/web3Setup'); 
+const { web3, contract } = require('../utils/web3Setup'); 
 
 // Get total count of products
 router.get('/total-products', async (req, res) => {
