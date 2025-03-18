@@ -4,19 +4,19 @@ import ForecastChart from "../../components/charts/ForecastChart";
 
 function CarbonFootprintTrackingPage() {
   return (
-    <div className="w-full h-screen flex items-center justify-center gap-4 text-white">
+    <div className="flex items-center justify-center w-full h-screen gap-4 text-white bg-[#111111]">
       <div className="flex items-center justify-center w-full h-screen">
         <div className="w-2/4 mx-auto">
           {/* Increased width for the chart container */}
-          <h2 className="text-2xl font-bold text-center mb-4">
+          <h2 className="mb-4 text-2xl font-bold text-center">
             Carbon Emission For Month
           </h2>
           <DoughnutChart />
         </div>
       </div>
 
-      <div className="w-full h-screen flex flex-col">
-        <div className="text-center text-3xl font-bold mb-20 mt-10">
+      <div className="flex flex-col w-full h-screen">
+        <div className="mt-10 mb-20 text-3xl font-bold text-center">
           CONTROL PANEL
         </div>
         <div className="w-3/4 mx-auto">
@@ -27,7 +27,7 @@ function CarbonFootprintTrackingPage() {
         {/* Guidance [warnings, safes, dangers] */}
 
         {/* Form to add current waste, electricity and firewoods usages */}
-        <div className="w-3/4 mx-auto mt-24 h-auto p-10 bg-white">
+        <div className="w-3/4 h-auto p-10 mx-auto mt-24 bg-white">
             
         </div>
       </div>
