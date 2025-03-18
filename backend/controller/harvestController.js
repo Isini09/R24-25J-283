@@ -2,17 +2,19 @@ const database = require("../config/db");
 const asyncHandler = require("express-async-handler");
 
 // GET: GET THE DATES OF THE BLOCKS
-const getHarvestDateController = asyncHandler(async (req, res) => {
+const getDatesByIdController = asyncHandler(async (req, res) => {
   try {
-    const { data, error } = await database.from("BlockData").select("*");
+    const { data, error } = await database.from("EmissionData").select("*");
 
-    if (error || !data) {
-      return res.status(400).json({ error: "Failed to fetch block data!" });
+    if (error || !data || data.length === 0) {
+      return res.status(404).json({ error: "No block data found!" });
     }
 
     res.status(200).json({ blockData: data });
   } catch (error) {
-    res.status(500).json({ error: `Server error! Please check ${error}` });
+    res
+      .status(500)
+      .json({ error: `Server error! Please check: ${error.message}` });
   }
 });
 
@@ -21,35 +23,30 @@ const harvestDateController = asyncHandler(async (req, res) => {
   try {
     const { blockId, harvestDate, pruningDate } = req.body;
 
-    const { statusText, error } = await database.from("BlockData").insert({
-      blockId: blockId,
-      harvestDate: harvestDate,
-      pruningDate: pruningDate,
-    });
+    const { data, error } = await database
+      .from("BlockData")
+      .insert({ blockId, harvestDate, pruningDate });
 
-    if (error) {
-      return res
-        .status(400)
-        .json({ error: error.message || "Something went wrong!" });
+    if (error || !data) {
+      return res.status(400).json({ error: "Something went wrong!" });
     }
 
-    res.status(200).json({ blockData: statusText });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error! Please check." });
+    res.status(200).json({ blockData: data });
+  } catch (error) {
+    res.status(500).json({ error: `Server error! Please check ${error}` });
   }
 });
 
 // PUT: UPDATE EXISTING DATA OF THE BLOCKS
 const updateHarvestDataController = asyncHandler(async (req, res) => {
   try {
-    const { blockId } = req.params;
-    const { harvestDate, prooningDate } = req.body;
+    const { id } = req.params;
+    const { harvestDate, pruningDate } = req.body;
 
     const { data: isBlockExist, error: checkError } = await database
       .from("BlockData")
       .select("*")
-      .eq("blockId", blockId);
+      .eq("id", id);
 
     if (checkError || !isBlockExist || isBlockExist.length === 0) {
       return res
@@ -57,23 +54,44 @@ const updateHarvestDataController = asyncHandler(async (req, res) => {
         .json({ error: "The block you searched for does not exist!" });
     }
 
-    const { data, error } = await database
+    const { error } = await database
       .from("BlockData")
-      .update({ harvestDate, prooningDate })
-      .eq("id", blockId);
+      .update({ harvestDate, pruningDate }) // Updated to match request body variables
+      .eq("id", id);
 
-    if (error || !data) {
+    if (error) {
       return res.status(400).json({ error: "Failed to update block data!" });
     }
 
-    res.status(200).json({ updatedBlockData: data });
+    res.status(200).json({ message: "Updated Successfully!" });
   } catch (error) {
-    res.status(500).json({ error: `Server error! Please check ${error}` });
+    res
+      .status(500)
+      .json({ error: `Server error! Please check: ${error.message}` });
+  }
+});
+
+const deleteBlockDatabyId = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await database.from("BlockData").delete().eq("id", id);
+
+    if (error) {
+      res.status(400).json({ message: "Request cannot be complete!" });
+    }
+
+    res.status(200).json({ message: "Deleted Successfully!" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Server error! Please check: ${error.message}` });
   }
 });
 
 module.exports = {
   harvestDateController,
   updateHarvestDataController,
-  getHarvestDateController,
+  getDatesByIdController,
+  deleteBlockDatabyId,
 };
