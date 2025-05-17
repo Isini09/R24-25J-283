@@ -4,16 +4,15 @@ const Harvest = () => {
   const [showHarvest, setShowHarvest] = React.useState(true);
   const [showPrune, setShowPrune] = React.useState(false);
   return (
-    <div className="bg-[#111111] w-full h-screen">
+    <div className="text-black w-full h-screen">
       <div
         style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
-       
         }}
       >
-        <h1 style={{ fontSize: 50, color: "white" }}>Harvest Management</h1>
+        <h1 style={{ fontSize: 50, color: "black" }}>Harvest Management</h1>
       </div>
       <div
         style={{
@@ -27,9 +26,9 @@ const Harvest = () => {
           style={{
             border: "2px solid",
             borderRadius: 10,
-            borderColor: showHarvest ? "white" : "transparent",
+            borderColor: showHarvest ? "black" : "transparent",
             padding: 10,
-            color: "white",
+            color: "black",
           }}
           onClick={() => {
             setShowPrune(false);
@@ -42,9 +41,9 @@ const Harvest = () => {
           style={{
             border: "2px solid",
             borderRadius: 10,
-            borderColor: showPrune ? "white" : "transparent",
+            borderColor: showPrune ? "black" : "transparent",
             padding: 10,
-            color: "white",
+            color: "black",
           }}
           onClick={() => {
             setShowHarvest(false);
@@ -72,7 +71,7 @@ const Harvest = () => {
                 gap: 40,
                 border: "2px solid",
                 borderRadius: 10,
-                borderColor: "white",
+                borderColor: "black",
               }}
             >
               <div
@@ -83,7 +82,7 @@ const Harvest = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h1 style={{ fontSize: 20, color: "white" }}>Block ID</h1>
+                <h1 style={{ fontSize: 20, color: "black" }}>Block ID</h1>
                 <input
                   style={{
                     width: 200,
@@ -91,8 +90,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="text"
                 />
@@ -106,7 +105,7 @@ const Harvest = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h1 style={{ fontSize: 20, color: "white" }}>Harvest Date</h1>
+                <h1 style={{ fontSize: 20, color: "black" }}>Harvest Date</h1>
                 <input
                   style={{
                     width: 200,
@@ -114,8 +113,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="date"
                   placeholder="Block"
@@ -129,8 +128,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="submit"
                 >
@@ -151,7 +150,7 @@ const Harvest = () => {
                 gap: 40,
                 border: "2px solid",
                 borderRadius: 10,
-                borderColor: "white",
+                borderColor: "black",
               }}
             >
               <div
@@ -162,7 +161,7 @@ const Harvest = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h1 style={{ fontSize: 20, color: "white" }}>Block ID</h1>
+                <h1 style={{ fontSize: 20, color: "black" }}>Block ID</h1>
                 <input
                   style={{
                     width: 200,
@@ -170,8 +169,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="text"
                 />
@@ -185,7 +184,7 @@ const Harvest = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h1 style={{ fontSize: 20, color: "white" }}>Prune Date</h1>
+                <h1 style={{ fontSize: 20, color: "black" }}>Prune Date</h1>
                 <input
                   style={{
                     width: 200,
@@ -193,8 +192,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="date"
                   placeholder="Block"
@@ -208,8 +207,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="submit"
                 >
