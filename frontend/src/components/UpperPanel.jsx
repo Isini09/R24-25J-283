@@ -54,6 +54,12 @@ const UpperPanel = () => {
       label: 'Harvest',
       path: '/harvest',
       type: 'link'
+    },
+    {
+      id: 'yield',
+      label: 'Yield Prediction',
+      path: '/yield',
+      type: 'link'
     }
   ];
 

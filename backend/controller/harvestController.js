@@ -4,12 +4,7 @@ const asyncHandler = require("express-async-handler");
 // GET: GET THE DATES OF THE BLOCKS
 const getDatesByIdController = asyncHandler(async (req, res) => {
   try {
-    const { blockId } = req.params;
-
-    const { data, error } = await database
-      .from("BlockData")
-      .select("*")
-      .eq("blockId", blockId);
+    const { data, error } = await database.from("EmissionData").select("*");
 
     if (error || !data || data.length === 0) {
       return res.status(404).json({ error: "No block data found!" });
@@ -28,19 +23,17 @@ const harvestDateController = asyncHandler(async (req, res) => {
   try {
     const { blockId, harvestDate, pruningDate } = req.body;
 
-    const { error } = await database
+    const { data, error } = await database
       .from("BlockData")
       .insert({ blockId, harvestDate, pruningDate });
 
-    if (error) {
-      return res.status(400).json({ error: "Failed to insert block data!" });
+    if (error || !data) {
+      return res.status(400).json({ error: "Something went wrong!" });
     }
 
-    res.status(201).json({ message: "Block Data Added Successfully!" });
+    res.status(200).json({ blockData: data });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: `Server error! Please check: ${error.message}` });
+    res.status(500).json({ error: `Server error! Please check ${error}` });
   }
 });
 

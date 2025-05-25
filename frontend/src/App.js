@@ -10,6 +10,7 @@ import UpperPanel from "./components/UpperPanel";
 import Harvest from "./pages/HarvestManagement/HarvestManagementPage";
 import Home from "./pages/User/Home"
 import UserBatchView from "./pages/User/ViewBatchDetails";
+import YieldPrediction from "./pages/Yield Prediction/YieldPrediction";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           path="/carbon-footprint-tracking"
           element={<CarbonFootprintTrackingPage />}
         />
+        <Route path="/yield" element={<YieldPrediction />} />
         <Route path="/harvest" element={<Harvest />} />
         <Route path="/userview" element={<UserBatchView />} />
 
