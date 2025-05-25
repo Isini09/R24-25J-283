@@ -11,6 +11,7 @@ import SupplierLogin from "./pages/Supplier/supplierLogin";
 import UpperPanel from "./components/UpperPanel";
 import SidePanel from "./components/SidePanel";
 import Harvest from "./pages/HarvestManagement/HarvestManagementPage";
+import YieldPrediction from "./pages/Yield Prediction/YieldPrediction";
 
 function App() {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
@@ -32,6 +33,7 @@ function App() {
       <UpperPanel toggleSidePanel={toggleSidePanel} />
       <SidePanel isOpen={isSidePanelOpen} toggleSidePanel={toggleSidePanel} />
       <Routes>
+        <Route path="/yield" element={<YieldPrediction />} />
         <Route
           path="/carbon-footprint-tracking"
           element={<CarbonFootprintTrackingPage />}
