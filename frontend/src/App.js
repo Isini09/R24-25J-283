@@ -8,6 +8,7 @@ import AddProductForm from "./pages/Product/AddProduct";
 import CarbonFootprintTrackingPage from "./pages/CorbonFootprintSystem/CatrbonFootprintTrackingPage";
 import UpperPanel from "./components/UpperPanel";
 import Harvest from "./pages/HarvestManagement/HarvestManagementPage";
+import YieldPrediction from "./pages/Yield Prediction/YieldPrediction";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           path="/carbon-footprint-tracking"
           element={<CarbonFootprintTrackingPage />}
         />
+        <Route path="/yield" element={<YieldPrediction />} />
         <Route path="/harvest" element={<Harvest />} />
       </Routes>
     </Router>

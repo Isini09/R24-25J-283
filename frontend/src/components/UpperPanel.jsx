@@ -22,6 +22,9 @@ const UpperPanel = () => {
         <li>
           <Link to="/harvest">Harvest</Link>
         </li>
+        <li>
+          <Link to="/yield">Yield Prediction</Link>
+        </li>
       </ul>
 
       <input type="text" placeholder="Search here" />
