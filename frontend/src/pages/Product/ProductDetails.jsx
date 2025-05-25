@@ -3,6 +3,7 @@
       import { useParams } from "react-router-dom";
       import NavBarAdmin from "../../components/NavBarAdmin";
       import { Bar } from "react-chartjs-2";
+      import { Download } from 'lucide-react';
       import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
       import { toast, ToastContainer } from "react-toastify";
       import "react-toastify/dist/ReactToastify.css";
@@ -312,6 +313,40 @@
           }
         };
 
+        const downloadQRCode = async () => {
+    try {
+      // Create a temporary link element
+      const link = document.createElement('a');
+      
+      // If the QR code is a base64 data URL, use it directly
+      if (batchDetails.qrCode.startsWith('data:')) {
+        link.href = batchDetails.qrCode;
+      } else {
+        // If it's a regular URL, fetch the image and convert to blob
+        const response = await fetch(batchDetails.qrCode);
+        const blob = await response.blob();
+        link.href = URL.createObjectURL(blob);
+      }
+      
+      // Set download filename
+      link.download = `qr-code-${Date.now()}.png`;
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up object URL if created
+      if (!batchDetails.qrCode.startsWith('data:')) {
+        URL.revokeObjectURL(link.href);
+      }
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+      alert('Failed to download QR code. Please try again.');
+    }
+  };
+
+
         // Prepare data for the plantation humidity chart
         const plantationHumidityLabels = plantationhumidityData.map((data) => data.date); // Assuming you have a date field
         const plantationHumidityValues = plantationhumidityData.map((data) => data.humidity); // Assuming you have a humidity field
@@ -329,136 +364,516 @@
           ],
         };
 
+        
+
         if (!batch) return <div className="mt-10 text-lg font-bold text-center">Loading...</div>;
 
+        
+
         return (
-          <div className="flex min-h-screen bg-gray-100">
-          <NavBarAdmin />
-          <ToastContainer />
-          <div className="ml-[250px] mt-[40px] p-6 w-full">
+          <div className="flex min-h-screen bg-gradient-to-br from-green-900 to-black">
+  <NavBarAdmin />
+  <ToastContainer />
+  
+ 
 
-            <h1 className="mb-6 text-3xl font-bold">Batch Details</h1>
-            <div className="flex items-start justify-between p-6 bg-white rounded-lg shadow-lg">
-              {!editMode ? (
-                <div>
-                  <div className="flex gap-[150px]">
-                  <div>
-                    <p className="text-lg font-semibold">{batch.batchId}</p>
-                    <br></br>
-                    <p><span className="font-semibold">Supplier:</span> {batch.supplierName}</p>
-                    <p><span className="font-semibold">Location:</span> {batch.location}</p>
-                    <p><span className="font-semibold">Date Started:</span> {new Date(batch.dateStarted).toLocaleDateString()}</p>
-                    <p><span className="font-semibold">Status:</span> {batch.status}</p>
-                  </div>
-                  
-                  <div>
-                    <img src={batchDetails.qrCode}/>
-                  </div>
-                  </div>
-                  
-                  <button 
-                    className="px-4 py-2 mt-4 text-white bg-green-900 rounded-full hover:bg-white hover:text-green-900 hover:border hover:border-green-900"
-                    onClick={() => setEditMode(true)}
-                  >
-                    Edit Batch
-                  </button>
-                  <button 
-                    className="px-4 py-2 mt-4 ml-4 text-green-900 border-2 border-green-900 rounded-full hover:bg-green-900 hover:text-white"
-                    onClick={handleDeleteBatch}
-                  >
-                    Delete Batch
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleUpdateBatchDetails} className="w-1/2">
-                  <input type="text" name="supplierName" value={batchDetails.supplierName} onChange={handleBatchDetailChange} className="w-full p-2 mb-2 border border-gray-300 rounded-md" />
-                  <input type="text" name="location" value={batchDetails.location} onChange={handleBatchDetailChange} className="w-full p-2 mb-2 border border-gray-300 rounded-md" />
-                  <input type="date" name="dateStarted" value={batchDetails.dateStarted} onChange={handleBatchDetailChange} className="w-full p-2 mb-2 border border-gray-300 rounded-md" />
-                  <select name="status" value={batchDetails.status} onChange={handleBatchDetailChange} className="w-full p-2 mb-2 border border-gray-300 rounded-md">
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                  <div className="flex gap-4 mt-4">
-                    <button type="submit" className="px-4 py-2 text-white bg-green-900 rounded-full hover:bg-white hover:text-green-900 hover:border hover:border-green-900">Save Changes</button>
-                    <button type="button" className="px-4 py-2 text-white transition bg-gray-500 rounded-lg hover:bg-gray-600" onClick={() => setEditMode(false)}>Cancel</button>
-                  </div>
-                </form>
-              )}
-            </div>
+  <div className="ml-[250px] mt-[35px] p-6 w-full relative z-10">
+    {/* Modern Header */}
+    <div className="mb-8 ">
+      <h1 className="mb-3 text-2xl font-bold text-transparent bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text">
+        Batch Details
+      </h1>
+      <div className="w-24 h-1 rounded-full bg-gradient-to-r from-blue-500 to-white"></div>
+    </div>
 
-            {/* Display Blockchain Data */}
-            {blockchainData && (
-              <div className="p-4 mt-6 bg-white rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold">Blockchain Details</h2>
-                <br></br>
-                <p><strong>Batch ID:</strong> {blockchainData.batchId}</p>
-                <p><strong>Supplier Name:</strong> {blockchainData.supplierName}</p>
+    {/* Main Batch Card */}
+    <div className="p-8 mb-8 border shadow-2xl backdrop-blur-xl bg-white/10 border-white/20 rounded-3xl hover:shadow-purple-500/25">
+      {!editMode ? (
+        <div className="space-y-6">
+          <div className="flex items-start gap-16">
+            {/* Batch Information */}
+            <div className="flex-1 space-y-6">
+              {/* Batch ID - Hero */}
+              <div className="cursor-pointer group">
+                <p className="mb-2 text-3xl font-bold text-white transition-colors duration-300 group-hover:text-blue-300">
+                  {batch.batchId}
+                </p>
+                <div className="w-16 h-0.5 bg-gradient-to-r from-blue-400 to-transparent group-hover:from-purple-400 transition-all duration-300"></div>
               </div>
-            )}
 
-            <h2 className="mt-10 mb-4 text-2xl font-semibold">Add Stage</h2>
-            <form onSubmit={handleAddStage} className="mt-4">
-              <select value={selectedStage} onChange={handleStageChange} className="p-2 mb-2 border border-gray-300 rounded-md">
-                <option value="">Select Stage</option>
-                {Object.keys(stagesConfig).map((stage) => (
-                  <option key={stage} value={stage}>{stage.charAt(0).toUpperCase() + stage.slice(1)}</option>
-                ))}
-              </select>
-              {selectedStage && stagesConfig[selectedStage].inputs.map((input) => (
-                <input
-                  key={input.name}
-                  type="text"
-                  name={input.name}
-                  placeholder={input.label}
-                  onChange={handleStageInputChange}
-                  className="w-full p-2 mb-2 border border-gray-300 rounded-md"
-                />
-              ))}
-              <button type="submit" className="px-4 py-2 mt-4 ml-4 text-green-900 border-2 border-green-900 rounded-full hover:bg-green-900 hover:text-white">Add Updates</button>
-            </form>
+              {/* Details Grid */}
+              <div className="grid gap-4">
+                <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
+                  <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 group-hover:scale-125"></div>
+                  <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Supplier:</span>
+                  <span className="text-lg font-semibold text-white">{batch.supplierName}</span>
+                </div>
 
-            <h2 className="mt-10 mb-4 text-2xl font-semibold">Stages</h2>
-            <div className="p-4 bg-white rounded-lg shadow-md">
-              {stages.length > 0 ? (
-                stages.map((stage, index) => (
-                  <div key={index} className="py-2 border-b">
-                    {editStageMode && currentStageIndex === index ? (
-                      <form onSubmit={handleUpdateStage} className="flex gap-2">
-                        {Object.keys(stage.inputs).map((inputKey) => (
-                          <input
-                            key={inputKey}
-                            type="text"
-                            name={inputKey}
-                            value={stageInputs[inputKey] || ''}
-                            onChange={handleStageInputChange}
-                            className="px-2 py-1 border rounded"
-                          />
-                        ))}
-                        <button type="submit" className="px-4 py-2 text-white bg-green-600 rounded-md">Save</button>
-                        <button type="button" onClick={() => setEditStageMode(false)} className="px-4 py-2 text-white bg-gray-500 rounded-md">Cancel</button>
-                      </form>
-                    ) : (
-                      <>
-                        <div>
-                        <p className="font-semibold">{stage.stage}</p>
-                        <pre className="text-gray-500">{JSON.stringify(stage .inputs, null, 2)}</pre>
-                        <button onClick={() => handleEditStage(index)} className="px-4 py-2 mt-4 text-white bg-green-900 rounded-full hover:bg-white hover:text-green-900 hover:border hover:border-green-900">Edit</button>
-                        <button onClick={() => handleDeleteStage(index)} className="px-4 py-2 mt-4 ml-4 text-green-900 border-2 border-green-900 rounded-full hover:bg-green-900 hover:text-white">Delete</button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500">No stages available for this batch.</p>
-              )}
+                <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
+                  <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 group-hover:scale-125"></div>
+                  <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Location:</span>
+                  <span className="text-lg font-semibold text-white">{batch.location}</span>
+                </div>
+
+                <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
+                  <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 group-hover:scale-125"></div>
+                  <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Date Started:</span>
+                  <span className="text-lg font-semibold text-white">{new Date(batch.dateStarted).toLocaleDateString()}</span>
+                </div>
+
+                <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
+                  <div className={`w-3 h-3 rounded-full mr-4 group-hover:scale-125 transition-transform duration-300 ${
+                    batch.status === 'Completed' 
+                      ? 'bg-gradient-to-r from-green-400 to-green-600 animate-pulse' 
+                      : 'bg-gradient-to-r from-yellow-400 to-orange-500 animate-pulse'
+                  }`}></div>
+                  <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Status:</span>
+                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold border-2 ${
+                    batch.status === 'Completed'
+                      ? 'bg-green-500/20 text-green-300 border-green-400/50 shadow-green-400/25'
+                      : 'bg-yellow-500/20 text-yellow-300 border-yellow-400/50 shadow-yellow-400/25'
+                  } shadow-lg backdrop-blur-sm`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${
+                      batch.status === 'Completed' ? 'bg-green-400' : 'bg-yellow-400'
+                    } animate-pulse`}></div>
+                    {batch.status}
+                  </span>
+                </div>
+              </div>
             </div>
-
-            <h2 className="mt-6 text-2xl font-semibold">Humidity Chart</h2>
-            <div className="mt-4">
-              <Bar data={plantationHumidityChartData} options={{ responsive: true }} />
+            
+            {/* QR Code Section */}
+            <div className="flex flex-col items-center">
+              <div className="relative group">
+                <div className="absolute inset-0 transition-opacity duration-300 opacity-75 bg-gradient-to-r from-blue-500 to-purple-500 rounded-3xl blur-lg group-hover:opacity-100"></div>
+                <div className="relative flex items-center justify-center w-48 h-48 p-4 transition-all duration-300 shadow-2xl backdrop-blur-xl bg-white/90 rounded-3xl group-hover:scale-105">
+                  <img src={batchDetails.qrCode} className="object-contain w-full h-full rounded-2xl" alt="QR Code" />
+                </div>
+              </div>
+              <p className="mt-4 font-medium text-center text-blue-200">QR Code</p>
+              <button
+          onClick={downloadQRCode}
+          className="flex items-center gap-2 px-4 py-2 mt-4 text-sm font-medium text-white transition-all duration-200 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-transparent"
+        >
+          <Download size={16} />
+          Download QR Code
+        </button>
             </div>
           </div>
+          
+          {/* Action Buttons */}
+          <div className="flex gap-4 pt-6 border-t border-white/10">
+            <button 
+              className="relative px-8 py-4 overflow-hidden font-semibold text-white transition-all duration-300 group bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25"
+              onClick={() => setEditMode(true)}
+            >
+              <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-emerald-400 to-emerald-500 group-hover:opacity-100"></div>
+              <span className="relative flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit Batch
+              </span>
+            </button>
+            
+            <button 
+              className="relative px-8 py-4 overflow-hidden font-semibold text-red-300 transition-all duration-300 border-2 group border-red-400/50 rounded-2xl hover:scale-105 hover:bg-red-500/20 hover:border-red-400 hover:shadow-2xl hover:shadow-red-500/25"
+              onClick={handleDeleteBatch}
+            >
+              <span className="relative flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete Batch
+              </span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={handleUpdateBatchDetails} className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-blue-200">Supplier Name</label>
+              <input 
+                type="text" 
+                name="supplierName" 
+                value={batchDetails.supplierName} 
+                onChange={handleBatchDetailChange} 
+                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-blue-200">Location</label>
+              <input 
+                type="text" 
+                name="location" 
+                value={batchDetails.location} 
+                onChange={handleBatchDetailChange} 
+                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-blue-200">Date Started</label>
+              <input 
+                type="date" 
+                name="dateStarted" 
+                value={batchDetails.dateStarted} 
+                onChange={handleBatchDetailChange} 
+                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-blue-200">Status</label>
+              <select 
+                name="status" 
+                value={batchDetails.status} 
+                onChange={handleBatchDetailChange} 
+                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15"
+              >
+                <option value="In Progress" className="bg-slate-800">In Progress</option>
+                <option value="Completed" className="bg-slate-800">Completed</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="flex gap-4 pt-6 border-t border-white/10">
+            <button 
+              type="submit" 
+              className="relative px-8 py-4 overflow-hidden font-semibold text-white transition-all duration-300 group bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25"
+            >
+              <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-emerald-400 to-emerald-500 group-hover:opacity-100"></div>
+              <span className="relative flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Save Changes
+              </span>
+            </button>
+            
+            <button 
+              type="button" 
+              className="px-8 py-4 font-semibold text-white transition-all duration-300 bg-slate-600/50 rounded-2xl hover:bg-slate-500/50 hover:scale-105 backdrop-blur-sm" 
+              onClick={() => setEditMode(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+
+    {/* Blockchain Data Card */}
+    {blockchainData && (
+      <div className="p-8 mb-8 border shadow-2xl backdrop-blur-xl bg-white/10 border-white/20 rounded-3xl hover:shadow-green-500/25">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center justify-center w-12 h-12 shadow-lg bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white">Blockchain Details</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="space-y-4">
+            <div className="p-4 transition-all duration-300 rounded-2xl bg-white/5 hover:bg-white/10">
+              <span className="block mb-1 text-sm font-medium text-green-200">Batch ID</span>
+              <p className="text-lg font-bold text-white">{blockchainData.batchId}</p>
+            </div>
+            <div className="p-4 transition-all duration-300 rounded-2xl bg-white/5 hover:bg-white/10">
+              <span className="block mb-1 text-sm font-medium text-green-200">Supplier Name</span>
+              <p className="text-lg font-bold text-white">{blockchainData.supplierName}</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center w-24 h-24 shadow-2xl bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl animate-pulse">
+              <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Add Stage Card */}
+    <div className="p-8 border shadow-2xl backdrop-blur-xl bg-white/10 border-white/20 rounded-3xl hover:shadow-purple-500/25 ">
+      <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center justify-center w-12 h-12 shadow-lg bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-2xl">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-white">Add Stage</h2>
+      </div>
+      
+      <form onSubmit={handleAddStage} className="space-y-6">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-purple-200">Select Stage</label>
+          <select 
+            value={selectedStage} 
+            onChange={handleStageChange} 
+            className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15"
+          >
+            <option value="" className="bg-slate-800">Select Stage</option>
+            {Object.keys(stagesConfig).map((stage) => (
+              <option key={stage} value={stage} className="bg-slate-800">
+                {stage.charAt(0).toUpperCase() + stage.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        {selectedStage && (
+          <div className="space-y-4 animate-fadeIn">
+            {stagesConfig[selectedStage].inputs.map((input) => (
+              <input
+                key={input.name}
+                type="text"
+                name={input.name}
+                placeholder={input.label}
+                onChange={handleStageInputChange}
+                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15"
+              />
+            ))}
+          </div>
+        )}
+        
+        <button 
+          type="submit" 
+          className="relative px-8 py-4 overflow-hidden font-semibold text-white transition-all duration-300 group bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-2xl hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25"
+        >
+          <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-emerald-600 to-emerald-700 group-hover:opacity-100"></div>
+          <span className="relative flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Add Updates
+          </span>
+        </button>
+      </form>
+      
+            {/* Stages Section */}
+<div className=" mt-8 backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl hover:shadow-blue-500/25 transition-all duration-500 hover:scale-[1.02] mb-8">
+  <div className="flex items-center gap-4 mb-8">
+    <div className="flex items-center justify-center w-12 h-12 shadow-lg bg-gradient-to-r from-blue-400 to-cyan-500 rounded-2xl">
+      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
+    </div>
+    <h2 className="text-3xl font-bold text-white">Process Stages</h2>
+  </div>
+
+  <div className="space-y-4">
+    {stages.length > 0 ? (
+      stages.map((stage, index) => (
+        <div 
+          key={index} 
+          className="group backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-[1.01] hover:shadow-lg"
+        >
+          {editStageMode && currentStageIndex === index ? (
+            <form onSubmit={handleUpdateStage} className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {Object.keys(stage.inputs).map((inputKey) => (
+                  <div key={inputKey} className="space-y-2">
+                    <label className="block text-sm font-medium text-blue-200 capitalize">
+                      {inputKey.replace(/([A-Z])/g, ' $1').trim()}
+                    </label>
+                    <input
+                      type="text"
+                      name={inputKey}
+                      value={stageInputs[inputKey] || ''}
+                      onChange={handleStageInputChange}
+                      className="w-full p-3 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-xl placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15"
+                      placeholder={`Enter ${inputKey.replace(/([A-Z])/g, ' $1').trim().toLowerCase()}`}
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex gap-3 pt-4 border-t border-white/10">
+                <button 
+                  type="submit" 
+                  className="relative px-6 py-3 overflow-hidden font-semibold text-white transition-all duration-300 group bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/25"
+                >
+                  <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-emerald-400 to-emerald-500 group-hover:opacity-100"></div>
+                  <span className="relative flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Save Changes
+                  </span>
+                </button>
+                
+                <button 
+                  type="button" 
+                  onClick={() => setEditStageMode(false)} 
+                  className="px-6 py-3 font-semibold text-white transition-all duration-300 bg-slate-600/50 rounded-xl hover:bg-slate-500/50 hover:scale-105 backdrop-blur-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="space-y-4">
+              {/* Stage Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white bg-gradient-to-r from-blue-400 to-cyan-500 rounded-xl">
+                    {index + 1}
+                  </div>
+                  <h3 className="text-xl font-bold text-white transition-colors duration-300 group-hover:text-blue-300">
+                    {stage.stage}
+                  </h3>
+                </div>
+                <div className="transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                  <span className="text-sm font-medium text-blue-200">
+                    Stage {index + 1} of {stages.length}
+                  </span>
+                </div>
+              </div>
+
+              {/* Stage Data Display */}
+              <div className="p-4 border bg-white/5 rounded-xl border-white/10">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {Object.entries(stage.inputs).map(([key, value]) => (
+                    <div key={key} className="space-y-1">
+                      <span className="text-xs font-medium tracking-wide text-blue-200 uppercase">
+                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                      </span>
+                      <p className="p-2 text-sm font-semibold text-white border rounded-lg bg-white/5 border-white/10">
+                        {value || '--'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button 
+                  onClick={() => handleEditStage(index)} 
+                  className="relative px-6 py-3 overflow-hidden font-semibold text-white transition-all duration-300 group bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/25"
+                >
+                  <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-emerald-400 to-emerald-500 group-hover:opacity-100"></div>
+                  <span className="relative flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </span>
+                </button>
+                
+                <button 
+                  onClick={() => handleDeleteStage(index)} 
+                  className="relative px-6 py-3 overflow-hidden font-semibold text-red-300 transition-all duration-300 border-2 group border-red-400/50 rounded-xl hover:scale-105 hover:bg-red-500/20 hover:border-red-400 hover:shadow-xl hover:shadow-red-500/25"
+                >
+                  <span className="relative flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ))
+    ) : (
+      <div className="py-12 text-center">
+        <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full opacity-50 bg-gradient-to-r from-gray-400 to-gray-500">
+          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 7h.01M9 16h.01" />
+          </svg>
+        </div>
+        <p className="mb-2 text-lg font-medium text-gray-400">No stages available</p>
+        <p className="text-sm text-gray-500">Stages will appear here once you add them to this batch.</p>
+      </div>
+    )}
+  </div>
+</div>
+
+{/* Humidity Chart Section */}
+<div className="p-8 mb-8 border shadow-2xl backdrop-blur-xl bg-white/10 border-white/20 rounded-3xl hover:shadow-green-500/25">
+  <div className="flex items-center gap-4 mb-8">
+    <div className="flex items-center justify-center w-12 h-12 shadow-lg bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl">
+      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    </div>
+    <div>
+      <h2 className="text-3xl font-bold text-white">Humidity Analytics</h2>
+      <p className="mt-1 text-green-200">Real-time environmental monitoring</p>
+    </div>
+  </div>
+
+  {/* Chart Container */}
+  <div className="p-6 border rounded-2xl border-white/10 ">
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+          <span className="text-sm font-medium text-green-200">Live Data</span>
+        </div>
+        <div className="w-px h-4"></div>
+        <span className="text-sm text-blue-200">Last updated: {new Date().toLocaleTimeString()}</span>
+      </div>
+      
+      <div className="flex gap-2">
+        <button className="px-4 py-2 text-sm text-white transition-all duration-300 border rounded-lg bg-white/10 hover:bg-white/20 border-white/20">
+          Export Data
+        </button>
+        <button className="px-4 py-2 text-sm text-white transition-all duration-300 rounded-lg shadow-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105">
+          View Details
+        </button>
+      </div>
+    </div>
+    
+    {/* Chart Wrapper */}
+    <div className="p-4 border rounded-xl border-white/10">
+      <Bar 
+        data={plantationHumidityChartData} 
+        options={{ 
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: 'rgba(255, 255, 255, 0.8)',
+                font: {
+                  family: 'Inter, sans-serif'
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.6)'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              }
+            },
+            y: {
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.6)'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              }
+            }
+          }
+        }} 
+      />
+    </div>
+  </div>
+</div>
+          </div>
+        </div>
         </div>
         );
       };
