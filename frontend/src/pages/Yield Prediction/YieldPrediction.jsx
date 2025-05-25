@@ -8,6 +8,8 @@ const YieldPrediction = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
+  const [predictionData, setPredictionData] = useState("");
+
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -51,14 +53,21 @@ const YieldPrediction = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/get-dates", {
-        startDate,
-        endDate,
-        file: uploadedFile,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/yield-predict",
+        {
+          startDate,
+          endDate,
+          file: uploadedFile,
+        }
+      );
+      setPredictionData(response.data);
       console.log("Prediction response:", response.data);
       alert("Prediction data received successfully!");
     } catch (error) {
+      setPredictionData(
+        error.response?.data || "Error fetching prediction data"
+      );
       console.error("Error getting prediction:", error);
       alert("Failed to get prediction data.");
     }
@@ -121,7 +130,7 @@ const YieldPrediction = () => {
           Start Date{" "}
         </h2>
         <input
-          type="text"
+          type="date"
           placeholder="dd/mm/yyyy"
           style={{
             width: "300px",
@@ -142,7 +151,7 @@ const YieldPrediction = () => {
       >
         <h2 style={{ fontSize: 20 }}> End Date </h2>
         <input
-          type="text"
+          type="date"
           placeholder="dd/mm/yyyy"
           style={{
             width: "300px",
@@ -168,6 +177,11 @@ const YieldPrediction = () => {
           Get Prediction
         </button>
       </div>
+      {predictionData && predictionData !== "" && (
+        <div>
+          <h1 style={{ fontSize: 20 }}>{predictionData}</h1>
+        </div>
+      )}
     </div>
   );
 };
