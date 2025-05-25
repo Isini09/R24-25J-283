@@ -4,7 +4,11 @@ const asyncHandler = require("express-async-handler");
 // GET: GET THE DATES OF THE BLOCKS
 const getDatesByIdController = asyncHandler(async (req, res) => {
   try {
-    const { data, error } = await database.from("EmissionData").select("*");
+    const { blockId } = req.params;
+    const { data, error } = await database
+      .from("BlockData")
+      .select("*")
+      .eq("blockId", blockId);
 
     if (error || !data || data.length === 0) {
       return res.status(404).json({ error: "No block data found!" });
