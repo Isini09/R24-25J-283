@@ -8,24 +8,29 @@ import AddProductForm from "./pages/Product/AddProduct";
 import CarbonFootprintTrackingPage from "./pages/CorbonFootprintSystem/CatrbonFootprintTrackingPage";
 import UpperPanel from "./components/UpperPanel";
 import Harvest from "./pages/HarvestManagement/HarvestManagementPage";
+import Home from "./pages/User/Home"
+import UserBatchView from "./pages/User/ViewBatchDetails";
 import YieldPrediction from "./pages/Yield Prediction/YieldPrediction";
 
 function App() {
   return (
     <Router>
-      <UpperPanel />
+      {/* <UpperPanel /> */}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/admin-dashboard" element={<Dashboard />} />
         <Route path="/product-dashboard" element={<ProductDashboard />} />
         <Route path="/add-product" element={<AddProductForm />} />
         <Route path="/product/:batchId" element={<ProductDetails />} />
+        <Route path="/home" element={<Home/>} />
         <Route
           path="/carbon-footprint-tracking"
           element={<CarbonFootprintTrackingPage />}
         />
         <Route path="/yield" element={<YieldPrediction />} />
         <Route path="/harvest" element={<Harvest />} />
+        <Route path="/userview" element={<UserBatchView />} />
+
       </Routes>
     </Router>
   );

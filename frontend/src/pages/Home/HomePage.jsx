@@ -1,8 +1,11 @@
 import React from "react";
 import MainContent from "../../components/MainContent";
+import UpperPanel from "../../components/UpperPanel";
 
 const HomePage = () => {
   return (
+    <div>
+      <UpperPanel/>
     <div
       style={{
         marginLeft: "0",
@@ -12,6 +15,7 @@ const HomePage = () => {
       }}
     >
       <MainContent />
+    </div>
     </div>
   );
 };

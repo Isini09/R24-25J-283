@@ -1,9 +1,12 @@
 import React from "react";
 import DoughnutChart from "../../components/charts/DoughnutChart";
 import ForecastChart from "../../components/charts/ForecastChart";
+import UpperPanel from "../../components/UpperPanel";
 
 function CarbonFootprintTrackingPage() {
   return (
+    <div>
+      <UpperPanel/>
     <div className="flex items-center justify-center w-full h-screen gap-4 text-black">
       <div className="flex items-center justify-center w-full h-screen">
         <div className="w-2/4 mx-auto">
@@ -29,6 +32,7 @@ function CarbonFootprintTrackingPage() {
         {/* Form to add current waste, electricity and firewoods usages */}
         <div className="w-3/4 h-auto p-10 mx-auto mt-24 bg-white"></div>
       </div>
+    </div>
     </div>
   );
 }
