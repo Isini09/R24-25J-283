@@ -2,3 +2,4 @@
 node_modules
 firebase-adminsdk.json
 sarima_model.pkl
+rf_emission_model.pkl
