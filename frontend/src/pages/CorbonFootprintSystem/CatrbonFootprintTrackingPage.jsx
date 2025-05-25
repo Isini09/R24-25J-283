@@ -4,7 +4,7 @@ import ForecastChart from "../../components/charts/ForecastChart";
 
 function CarbonFootprintTrackingPage() {
   return (
-    <div className="flex items-center justify-center w-full h-screen gap-4 text-white bg-[#111111]">
+    <div className="flex items-center justify-center w-full h-screen gap-4 text-black">
       <div className="flex items-center justify-center w-full h-screen">
         <div className="w-2/4 mx-auto">
           {/* Increased width for the chart container */}
@@ -27,9 +27,7 @@ function CarbonFootprintTrackingPage() {
         {/* Guidance [warnings, safes, dangers] */}
 
         {/* Form to add current waste, electricity and firewoods usages */}
-        <div className="w-3/4 h-auto p-10 mx-auto mt-24 bg-white">
-            
-        </div>
+        <div className="w-3/4 h-auto p-10 mx-auto mt-24 bg-white"></div>
       </div>
     </div>
   );

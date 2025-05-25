@@ -82,7 +82,7 @@ const Harvest = () => {
           justifyContent: "center",
         }}
       >
-        <h1 style={{ fontSize: 50, color: "white" }}>Harvest Management</h1>
+        <h1 style={{ fontSize: 50, color: "black" }}>Harvest Management</h1>
       </div>
       <div
         style={{
@@ -96,9 +96,9 @@ const Harvest = () => {
           style={{
             border: "2px solid",
             borderRadius: 10,
-            borderColor: showHarvest ? "white" : "transparent",
+            borderColor: showHarvest ? "black" : "transparent",
             padding: 10,
-            color: "white",
+            color: "black",
           }}
           onClick={() => {
             setShowPrune(false);
@@ -111,9 +111,9 @@ const Harvest = () => {
           style={{
             border: "2px solid",
             borderRadius: 10,
-            borderColor: showPrune ? "white" : "transparent",
+            borderColor: showPrune ? "black" : "transparent",
             padding: 10,
-            color: "white",
+            color: "black",
           }}
           onClick={() => {
             setShowHarvest(false);
@@ -141,7 +141,7 @@ const Harvest = () => {
                 gap: 40,
                 border: "2px solid",
                 borderRadius: 10,
-                borderColor: "white",
+                borderColor: "black",
               }}
             >
               <div
@@ -152,7 +152,7 @@ const Harvest = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h1 style={{ fontSize: 20, color: "white" }}>Block ID</h1>
+                <h1 style={{ fontSize: 20, color: "black" }}>Block ID</h1>
                 <input
                   style={{
                     width: 200,
@@ -160,8 +160,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   onChange={(event) => setBlockId(event.target.value)}
                   type="text"
@@ -176,7 +176,7 @@ const Harvest = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h1 style={{ fontSize: 20, color: "white" }}>Harvest Date</h1>
+                <h1 style={{ fontSize: 20, color: "black" }}>Harvest Date</h1>
                 <input
                   style={{
                     width: 200,
@@ -184,8 +184,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="date"
                   onChange={(event) => setHarvestDate(event.target.value)}
@@ -199,8 +199,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="button"
                   onClick={postHarvestData}
@@ -222,7 +222,7 @@ const Harvest = () => {
                 gap: 40,
                 border: "2px solid",
                 borderRadius: 10,
-                borderColor: "white",
+                borderColor: "black",
               }}
             >
               <div
@@ -233,7 +233,7 @@ const Harvest = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h1 style={{ fontSize: 20, color: "white" }}>Block ID</h1>
+                <h1 style={{ fontSize: 20, color: "black" }}>Block ID</h1>
                 <input
                   style={{
                     width: 200,
@@ -241,8 +241,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="text"
                   onChange={(event) => setBlockId(event.target.value)}
@@ -257,7 +257,7 @@ const Harvest = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h1 style={{ fontSize: 20, color: "white" }}>Prune Date</h1>
+                <h1 style={{ fontSize: 20, color: "black" }}>Prune Date</h1>
                 <input
                   style={{
                     width: 200,
@@ -265,8 +265,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="date"
                   onChange={(event) => setPruneDate(event.target.value)}
@@ -280,8 +280,8 @@ const Harvest = () => {
                     border: "2px solid",
                     borderRadius: 10,
                     backgroundColor: "transparent",
-                    borderColor: "white",
-                    color: "white",
+                    borderColor: "black",
+                    color: "black",
                   }}
                   type="button"
                   onClick={postPruneData}

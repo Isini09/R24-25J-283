@@ -4,3 +4,4 @@ firebase-adminsdk.json
 sarima_model.pkl
 
 yield_model.pkl
+rf_emission_model.pkl
