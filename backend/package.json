@@ -4,8 +4,8 @@
   "description": "Cyberseeds main system backend",
   "main": "server.js",
   "scripts": {
-    "start": "node back-end/server.js",
-    "server": "nodemon back-end/server.js",
+    "start": "node server.js",
+    "server": "nodemon server.js && server_2.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "CYBERSEEDS",

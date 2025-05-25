@@ -1,10 +1,12 @@
 import React from "react";
+import UpperPanel from "../../components/UpperPanel";
 
 const Harvest = () => {
   const [showHarvest, setShowHarvest] = React.useState(true);
   const [showPrune, setShowPrune] = React.useState(false);
   return (
-    <div className="text-black w-full h-screen">
+    <div className="w-full h-screen text-black">
+      <UpperPanel/>
       <div
         style={{
           display: "flex",
