@@ -13,5 +13,6 @@ app.use("/api/enviroment", require("./routes/envDataRoutes"));
 app.use("/api", require("./routes/forecastModelRoute"));
 app.use("/api", require("./routes/harvestRoutes"));
 // app.use('/admin', require('./routes/admin'));
+app.use("/api", require("./routes/emissionGuideRoute"));
 
 app.listen(PORT, () => console.log(`SERVER IS RUNNING ON ${PORT}`));
