@@ -3,12 +3,12 @@ import axios from "axios";
 import UpperPanel from "../../components/UpperPanel";
 
 const Harvest = () => {
-  const [showHarvest, setShowHarvest] = React.useState(true);
-  const [showPrune, setShowPrune] = React.useState(false);
+  const [showHarvest, setShowHarvest] = useState(true);
+  const [showPrune, setShowPrune] = useState(false);
   const [data, setData] = useState({});
-  const [blockId, setBlockId] = useState(" ");
-  const [harvestDate, setHarvestDate] = useState(" ");
-  const [pruneDate, setPruneDate] = useState(" ");
+  const [blockId, setBlockId] = useState("");
+  const [harvestDate, setHarvestDate] = useState("");
+  const [pruneDate, setPruneDate] = useState("");
 
   const getHarvestData = async (blockId) => {
     try {
@@ -25,6 +25,10 @@ const Harvest = () => {
 
   const postHarvestData = async () => {
     try {
+      if (!blockId || !harvestDate || !pruneDate) {
+        alert("Fill all the data");
+        return;
+      }
       const response = await axios.post(
         "http://localhost:5000/api/harvest-data",
         { blockId, harvestDate, pruneDate }
@@ -33,7 +37,7 @@ const Harvest = () => {
       window.location.reload();
     } catch (error) {
       alert(error.message);
-      console.error("Error post harvest data:", error);
+      console.error("Error posting harvest data:", error);
       window.location.reload();
     }
   };
@@ -44,9 +48,10 @@ const Harvest = () => {
         `http://localhost:5000/api/harvest-data/${blockId}`,
         { blockId, harvestDate, pruneDate }
       );
-      console.log(response.data);
+      alert(response.data.message || "Update successful");
     } catch (error) {
       console.error("Error updating harvest data:", error);
+      alert(error.message);
     }
   };
 
@@ -63,7 +68,7 @@ const Harvest = () => {
   return (
     <div className="h-screen bg-gray-900">
       <UpperPanel />
-      <div className="flex justify-center pt-8 ">
+      <div className="flex justify-center pt-8">
         <h1 className="text-5xl font-bold text-green-400">
           Harvest Management
         </h1>
@@ -109,14 +114,14 @@ const Harvest = () => {
               <button
                 className="h-10 text-white transition-colors duration-200 bg-transparent border-2 border-white rounded-lg w-36 hover:bg-white hover:text-gray-900"
                 type="button"
-                onClick=""
+                onClick={postHarvestData}
               >
                 Create
               </button>
               <button
                 className="h-10 text-white transition-colors duration-200 bg-transparent border-2 border-white rounded-lg w-36 hover:bg-white hover:text-gray-900"
                 type="button"
-                onClick=""
+                onClick={updateHarvestData}
               >
                 Update
               </button>
