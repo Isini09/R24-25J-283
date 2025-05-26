@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Batch = require('../models/batchModel'); // Adjust the path as necessary
+const Batch = require('../models/batchModel');
+const Supplier = require('../models/Supplier');
 const QRCode = require('qrcode'); 
 const { web3, contract } = require('../utils/web3Setup'); 
 
@@ -366,6 +367,98 @@ router.delete("/:batchId/certifications/:certIndex", async (req, res) => {
   }
 });
 
+//Supplier Routes
 
+// Create Supplier
+router.post('/supplier/add', async (req, res) => {
+  try {
+    const {
+      supplierId,
+      name,
+      companyName,
+      location,
+      contact,
+      certifications,
+      ingredientsSupplied,
+      documents,
+      status
+    } = req.body;
+
+    // Ensure supplierId and name exist
+    if (!supplierId || !name) {
+      return res.status(400).json({ error: 'supplierId and name are required.' });
+    }
+
+    const newSupplier = new Supplier({
+      supplierId,
+      name,
+      companyName,
+      location,
+      contact,
+      certifications,
+      ingredientsSupplied,
+      documents,
+      status
+    });
+
+    const savedSupplier = await newSupplier.save();
+    console.log("New supplier added:", savedSupplier);
+    res.status(201).json(savedSupplier);
+  } catch (err) {
+    console.error("Error adding supplier:", err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Get All Suppliers
+router.get('/supplier/list', async (req, res) => {
+  try {
+    const suppliers = await Supplier.find();
+    res.json(suppliers);
+  } catch (err) {
+    console.error("Error fetching suppliers:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get Supplier by Supplier ID
+router.get('/supplier/list/:supplierId', async (req, res) => {
+  try {
+    const supplier = await Supplier.findOne({ supplierId: req.params.supplierId });
+    if (!supplier) return res.status(404).json({ message: 'Supplier not found' });
+    res.json(supplier);
+  } catch (err) {
+    console.error("Error fetching supplier:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update Supplier by Supplier ID
+router.put('/supplier/list/:supplierId', async (req, res) => {
+  try {
+    const updated = await Supplier.findOneAndUpdate(
+      { supplierId: req.params.supplierId },
+      req.body,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Supplier not found' });
+    res.json(updated);
+  } catch (err) {
+    console.error("Error updating supplier:", err.message);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Delete Supplier by Supplier ID
+router.delete('/supplier/list/:supplierId', async (req, res) => {
+  try {
+    const deleted = await Supplier.findOneAndDelete({ supplierId: req.params.supplierId });
+    if (!deleted) return res.status(404).json({ message: 'Supplier not found' });
+    res.json({ message: 'Supplier deleted successfully' });
+  } catch (err) {
+    console.error("Error deleting supplier:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
