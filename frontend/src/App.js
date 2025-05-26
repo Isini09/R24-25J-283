@@ -11,6 +11,7 @@ import Harvest from "./pages/HarvestManagement/HarvestManagementPage";
 import Home from "./pages/User/Home"
 import UserBatchView from "./pages/User/ViewBatchDetails";
 import YieldPrediction from "./pages/Yield Prediction/YieldPrediction";
+import SupplierList from "./pages/Supplier/supplierList"
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/yield" element={<YieldPrediction />} />
         <Route path="/harvest" element={<Harvest />} />
         <Route path="/userview" element={<UserBatchView />} />
+        <Route path="/supplier" element={<SupplierList />} />
 
       </Routes>
     </Router>

@@ -16,7 +16,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Enhanced StatCard component with modern green theme
+// Enhanced StatCard component with dark theme and borders
 function StatCard({ title, value, icon }) {
   const iconsMap = {
     users: '👥',
@@ -26,60 +26,60 @@ function StatCard({ title, value, icon }) {
   };
 
   const gradientMap = {
-    users: 'from-green-400 to-teal-600',
-    boxes: 'from-green-400 to-teal-600',
-    check: 'from-teal-400 to-cyan-600',
-    truck: 'from-lime-400 to-green-600',
+    users: 'from-green-400 to-emerald-500',
+    boxes: 'from-green-500 to-teal-500',
+    check: 'from-emerald-400 to-green-500',
+    truck: 'from-lime-500 to-green-600',
   };
 
   return (
     <div className="relative overflow-hidden group">
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradientMap[icon]} opacity-90 rounded-2xl`}></div>
-      <div className="relative p-6 transition-all duration-300 border shadow-xl bg-white/10 backdrop-blur-sm border-white/20 rounded-2xl hover:scale-105 hover:shadow-2xl hover:bg-white/20">
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradientMap[icon]} opacity-20 rounded-2xl`}></div>
+      <div className="relative p-6 transition-all duration-300 border-2 shadow-xl bg-gray-800/90 backdrop-blur-sm border-green-500/30 rounded-2xl hover:scale-105 hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/50">
         <div className="flex items-center space-x-4">
-          <div className="p-3 text-4xl transition-transform duration-300 transform rounded-full group-hover:scale-110 group-hover:rotate-6 bg-white/20 backdrop-blur-sm">
+          <div className="p-3 text-4xl transition-transform duration-300 transform border rounded-full group-hover:scale-110 group-hover:rotate-6 bg-green-500/20 backdrop-blur-sm border-green-400/30">
             {iconsMap[icon]}
           </div>
           <div>
-            <p className="mb-1 text-sm font-medium tracking-wide uppercase text-white/80">{title}</p>
+            <p className="mb-1 text-sm font-medium tracking-wide text-green-300 uppercase">{title}</p>
             <p className="text-3xl font-bold text-white tabular-nums">{value}</p>
           </div>
         </div>
-        <div className="absolute w-16 h-16 rounded-full -right-4 -bottom-4 bg-white/10 blur-xl"></div>
+        <div className="absolute w-16 h-16 rounded-full -right-4 -bottom-4 bg-green-500/10 blur-xl"></div>
       </div>
     </div>
   );
 }
 
-// Modern chart container
+// Modern chart container with dark theme
 function ChartContainer({ title, children, className = "" }) {
   return (
-    <div className={`group relative overflow-hidden bg-white/95 backdrop-blur-sm border border-green-100 shadow-xl rounded-2xl p-6 transition-all duration-300 hover:shadow-2xl hover:bg-white ${className}`}>
-      <div className="absolute inset-0 transition-opacity duration-500 opacity-0 bg-gradient-to-br from-green-50/50 to-transparent group-hover:opacity-100"></div>
+    <div className={`group relative overflow-hidden bg-gray-800/90 backdrop-blur-sm border border-green-500/20 shadow-xl rounded-2xl p-6 transition-all duration-300 hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/30 ${className}`}>
+      <div className="absolute inset-0 transition-opacity duration-500 opacity-0 bg-gradient-to-br from-green-500/5 to-transparent group-hover:opacity-100"></div>
       <div className="relative z-10">
-        <h2 className="mb-4 text-lg font-bold tracking-tight text-gray-800">{title}</h2>
+        <h2 className="mb-4 text-lg font-bold tracking-tight text-green-100">{title}</h2>
         {children}
       </div>
-      <div className="absolute w-20 h-20 rounded-full -top-2 -right-2 bg-gradient-to-br from-green-200/30 to-emerald-200/30 blur-xl"></div>
+      <div className="absolute w-20 h-20 rounded-full -top-2 -right-2 bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-xl"></div>
     </div>
   );
 }
 
-// Enhanced list item
+// Enhanced list item with dark theme
 function ListItem({ title, subtitle, isUser = false }) {
   return (
-    <div className="flex items-center p-4 space-x-4 transition-all duration-300 border border-green-100 group rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 hover:border-green-200 hover:shadow-md hover:transform hover:translate-x-1">
+    <div className="flex items-center p-4 space-x-4 transition-all duration-300 border border-green-500/20 group rounded-xl bg-gradient-to-r from-gray-700/50 to-gray-800/50 hover:from-gray-700/70 hover:to-gray-800/70 hover:border-green-400/40 hover:shadow-md hover:transform hover:translate-x-1">
       <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg transition-all duration-300 group-hover:scale-110 ${
-        isUser ? 'bg-gradient-to-br from-emerald-400 to-green-500' : 'bg-gradient-to-br from-green-400 to-teal-500'
-      } text-white shadow-lg`}>
+        isUser ? 'bg-gradient-to-br from-emerald-500 to-green-600' : 'bg-gradient-to-br from-green-500 to-teal-600'
+      } text-white shadow-lg border border-green-400/30`}>
         {isUser ? '👤' : '📦'}
       </div>
       <div className="flex-1">
-        <p className="text-base font-semibold text-gray-800">{title}</p>
-        <p className="mt-1 text-sm text-gray-600">{subtitle}</p>
+        <p className="text-base font-semibold text-green-100">{title}</p>
+        <p className="mt-1 text-sm text-gray-400">{subtitle}</p>
       </div>
       <div className="transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-green-500">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-green-400">
           <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
@@ -129,12 +129,12 @@ function Dashboard() {
     { month: 'May', txCount: 260 },
   ];
 
-  // Custom tooltip
+  // Custom tooltip with dark theme
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="p-3 border border-green-200 shadow-xl bg-gray-800/90 backdrop-blur-md rounded-xl">
-          <p className="font-medium text-white">{`${label}`}</p>
+        <div className="p-3 border shadow-xl border-green-400/50 bg-gray-900/95 backdrop-blur-md rounded-xl">
+          <p className="font-medium text-green-100">{`${label}`}</p>
           <p className="text-green-300">
             {`${payload[0].name}: ${payload[0].value}`}
           </p>
@@ -199,27 +199,26 @@ function Dashboard() {
   }, [searchTerm, productList]);
 
   return (
-    <div className="relative flex h-screen overflow-hidden">
-      {/* Animated background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
-        <div className="absolute bg-green-200 rounded-full top-1/4 -left-40 w-80 h-80 mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
-        <div className="absolute rounded-full top-3/4 -right-40 w-80 h-80 bg-emerald-200 mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
-        <div className="absolute transform -translate-x-1/2 -translate-y-1/2 bg-teal-200 rounded-full top-1/2 left-1/2 w-60 h-60 mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
+    <div className="relative flex h-screen overflow-hidden bg-gray-900">
+      {/* Animated dark background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="absolute rounded-full bg-green-600/10 top-1/4 -left-40 w-80 h-80 mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+        <div className="absolute rounded-full top-3/4 -right-40 w-80 h-80 bg-emerald-600/10 mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
+        <div className="absolute transform -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-600/10 top-1/2 left-1/2 w-60 h-60 mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
       </div>
       
       <NavBarAdmin />
       <div className="ml-[250px] mt-[35px] p-6 w-full overflow-auto relative z-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text">
+          <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text">
             Dashboard
           </h1>
-          <p className="text-lg text-gray-600">Monitor your supply chain performance at a glance</p>
+          <p className="text-lg text-gray-400">Monitor your supply chain performance at a glance</p>
         </div>
 
         {/* Stat cards */}
         <div className="grid grid-cols-1 gap-6 mb-10 md:grid-cols-4">
-          <StatCard title="Total Users" value={totalUsers} icon="users" />
           <StatCard title="Total Products" value={totalProducts} icon="boxes" />
           <StatCard title="Verified Products" value={verifiedProducts} icon="check" />
           <StatCard title="Total Suppliers" value={totalSuppliers} icon="truck" />
@@ -243,11 +242,11 @@ function Dashboard() {
                   strokeWidth={4}
                   fill="url(#userGradient)"
                   dot={{ fill: '#10B981', strokeWidth: 2, r: 6 }}
-                  activeDot={{ r: 8, fill: '#10B981', stroke: '#fff', strokeWidth: 2 }}
+                  activeDot={{ r: 8, fill: '#10B981', stroke: '#1F2937', strokeWidth: 2 }}
                 />
-                <CartesianGrid stroke="#e0e7ff" strokeDasharray="3 3" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+                <CartesianGrid stroke="#374151" strokeDasharray="3 3" />
+                <XAxis dataKey="month" stroke="#9CA3AF" />
+                <YAxis stroke="#9CA3AF" />
                 <Tooltip content={<CustomTooltip />} />
               </LineChart>
             </ResponsiveContainer>
@@ -262,9 +261,9 @@ function Dashboard() {
                     <stop offset="95%" stopColor="#10B981" stopOpacity={0.9}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
-                <XAxis dataKey="name" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis dataKey="name" stroke="#9CA3AF" />
+                <YAxis stroke="#9CA3AF" />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="count" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
               </BarChart>
@@ -285,6 +284,7 @@ function Dashboard() {
                   paddingAngle={5}
                   fill="#8884d8"
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  labelStyle={{ fill: '#D1FAE5', fontSize: '12px' }}
                 >
                   {complianceData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -314,11 +314,11 @@ function Dashboard() {
                   strokeWidth={4}
                   fill="url(#blockchainGradient)"
                   dot={{ fill: '#059669', strokeWidth: 2, r: 6 }}
-                  activeDot={{ r: 8, fill: '#059669', stroke: '#fff', strokeWidth: 2 }}
+                  activeDot={{ r: 8, fill: '#059669', stroke: '#1F2937', strokeWidth: 2 }}
                 />
-                <CartesianGrid stroke="#e0e7ff" strokeDasharray="3 3" />
-                <XAxis dataKey="month" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+                <CartesianGrid stroke="#374151" strokeDasharray="3 3" />
+                <XAxis dataKey="month" stroke="#9CA3AF" />
+                <YAxis stroke="#9CA3AF" />
                 <Tooltip content={<CustomTooltip />} />
               </LineChart>
             </ResponsiveContainer>
@@ -331,7 +331,7 @@ function Dashboard() {
             <div className="space-y-3">
               {recentProducts.length === 0 ? (
                 <div className="py-8 text-center">
-                  <div className="mb-4 text-6xl text-gray-400">📦</div>
+                  <div className="mb-4 text-6xl text-gray-600">📦</div>
                   <p className="text-gray-500">No recent products</p>
                 </div>
               ) : (
@@ -351,7 +351,7 @@ function Dashboard() {
             <div className="space-y-3">
               {recentUsers.length === 0 ? (
                 <div className="py-8 text-center">
-                  <div className="mb-4 text-6xl text-gray-400">👥</div>
+                  <div className="mb-4 text-6xl text-gray-600">👥</div>
                   <p className="text-gray-500">No recent users</p>
                 </div>
               ) : (

@@ -1,319 +1,308 @@
-      import React, { useState, useEffect } from "react";
-      import axios from "axios";
-      import { useParams } from "react-router-dom";
-      import NavBarAdmin from "../../components/NavBarAdmin";
-      import { Bar } from "react-chartjs-2";
-      import { Download } from 'lucide-react';
-      import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-      import { toast, ToastContainer } from "react-toastify";
-      import "react-toastify/dist/ReactToastify.css";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import NavBarAdmin from "../../components/NavBarAdmin";
+import { Bar } from "react-chartjs-2";
+import { Download } from 'lucide-react';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
-      // Register the necessary chart
-      ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+// Register the necessary chart
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-      const BatchDetails = () => {
-        const { batchId } = useParams();
-        const [batch, setBatch] = useState(null);
-        const [humidityData, setHumidityData] = useState([]);
-        const [plantationhumidityData, setPlantationHumidityData] = useState([]);
-        const [blockchainData, setBlockchainData] = useState([]);
-        const [editMode, setEditMode] = useState(false);
-        const [batchDetails, setBatchDetails] = useState({
-          supplierName: "",
-          location: "",
-          dateStarted: "",
-          status: "",
+const BatchDetails = () => {
+  const { batchId } = useParams();
+  const [batch, setBatch] = useState(null);
+  const [humidityData, setHumidityData] = useState([]);
+  const [blockchainData, setBlockchainData] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [batchDetails, setBatchDetails] = useState({
+    supplierName: "",
+    location: "",
+    dateStarted: "",
+    status: "",
+  });
+  const [stages, setStages] = useState([]);
+  const [selectedStage, setSelectedStage] = useState("");
+  const [stageInputs, setStageInputs] = useState({});
+  const [editStageMode, setEditStageMode] = useState(false);
+  const [currentStageIndex, setCurrentStageIndex] = useState(null);
+
+  const stagesConfig = {
+    plantation: {
+      inputs: [
+        { name: "plantationDate", label: "Date when the batch was planted" },
+        { name: "plantationTemperature", label: "Temperature in the plantation field (°C)" },
+        { name: "plantationHumidity", label: "Humidity level in the plantation field (%)" },
+        { name: "fertilizersUsed", label: "Type of fertilizers applied" },
+        { name: "pesticidesUsed", label: "Type of pesticides or herbicides used" },       
+      ],
+    },
+    leafSorting: {
+      inputs: [
+        { name: "sortingDate", label: "Date when sorting was done" },
+        { name: "totalLeaves", label: "Total leaves collected (g)" },
+        { name: "maturedLeaves", label: "Weight of matured leaves (g)" },
+        { name: "unmaturedLeaves", label: "Weight of unmatured leaves (g)" },
+        { name: "acceptedLeaves", label: "Leaves accepted for processing (g)" },
+        { name: "rejectedLeaves", label: "Leaves rejected due to maturity (g)" },
+        { name: "isBatchAccepted", label: "Batch Accepted (True/False)" },
+        { name: "responsiblePerson", label: "Responsible Person: Sorting Supervisor" },
+      ],
+    },
+    withering: {
+      inputs: [
+        { name: "witheringDate", label: "Date when withering was performed" },
+        { name: "initialWeight", label: "Weight of fresh leaves before withering (g)" },
+        { name: "finalWeight", label: "Weight of leaves after withering (g)" },
+        { name: "moistureReduction", label: "Percentage of moisture removed (%)" },
+        { name: "witheringDuration", label: "Time spent in withering (hours)" },
+        { name: "witheringTemperature", label: "Temperature during withering (°C)" },
+        { name: "witheringHumidity", label: "Humidity during withering (%)" },
+        { name: "witheringMethod", label: "Withering Method (Natural/Mechanical)" },
+        { name: "responsiblePerson", label: "Responsible Person: Withering Supervisor" },
+      ],
+    },
+    rolling: {
+      inputs: [
+        { name: "rollingDate", label: "Date when rolling was performed" },
+        { name: "rollingPressure", label: "Pressure applied during rolling (kg)" },
+        { name: "rollingTime", label: "Duration of rolling process (minutes)" },
+        { name: "rollingMachineUsed", label: "Type of machine used" },
+        { name: "rollingBatchWeight", label: "Weight of batch before and after rolling (g)" },
+        { name: "rollingTemperature", label: "Temperature during rolling (°C)" },
+        { name: "responsiblePerson", label: "Responsible Person: Rolling Supervisor" },
+      ],
+    },
+    oxidation: {
+      inputs: [
+        { name: "oxidationDate", label: "Date when oxidation was performed" },
+        { name: "oxidationTime", label: "Time for oxidation process (minutes)" },
+        { name: "oxidationTemperature", label: "Temperature maintained during oxidation (°C)" },
+        { name: "oxidationHumidity", label: "Humidity level during oxidation (%)" },
+        { name: "oxidationEnzymes", label: "Enzymes or catalysts used" },
+        { name: "colorChangeObservation", label: "Expected color change" },
+        { name: "responsiblePerson", label: "Responsible Person: Oxidation Supervisor" },
+      ],
+    },
+    drying: {
+      inputs: [
+        { name: "dryingDate", label: "Date when drying was performed" },
+        { name: "dryingTime", label: "Duration of drying (minutes)" },
+        { name: "dryingTemperature", label: "Temperature in drying chamber (°C)" },
+        { name: "finalMoistureContent", label: "Moisture content after drying (%)" },
+        { name: "dryingMachineUsed", label: "Type of dryer used" },
+        { name: "dryingBatchWeight", label: "Weight before and after drying (g)" },
+        { name: "responsiblePerson", label: "Responsible Person: Drying Supervisor" },
+      ],
+    },
+    sifting: {
+      inputs: [
+        { name: "siftingDate", label: "Date when sifting was performed" },
+        { name: "siftingMethod", label: "Sifting Method (Manual/Machine)" },
+        { name: "teaGrades", label: "Different tea grades separated" },
+        { name: "siftingBatchWeight", label: "Weight of batch before and after sifting (g)" },
+        { name: "siftingMachineUsed", label: "Type of machine used" },
+        { name: "responsiblePerson", label: "Responsible Person: Sifting Supervisor" },
+      ],
+    },
+    packing: {
+      inputs: [
+        { name: "packingDate", label: "Date when packing was done" },
+        { name: "packageType", label: "Type of packaging used (Paper, Tin, Plastic)" },
+        { name: "packageWeight", label: "Weight of tea in each package (g)" },
+        { name: "batchNumber", label: "Unique batch number assigned" },
+        { name: "expiryDate", label: "Expiry date of the product" },
+        { name: "packingMachineUsed", label: "Machine used for packing" },
+        { name: "responsiblePerson", label: "Responsible Person: Packing Supervisor" },
+      ],
+    },
+  };
+  
+
+  useEffect(() => {
+    const fetchBatchDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/admin/${batchId}`);
+        setBatch(response.data);
+        setBatchDetails({
+          supplierName: response.data.supplierName,
+          location: response.data.location,
+          dateStarted: response.data.dateStarted,
+          status: response.data.status,
+          qrCode: response.data.qrCode,
         });
-        const [stages, setStages] = useState([]);
-        const [selectedStage, setSelectedStage] = useState("");
-        const [stageInputs, setStageInputs] = useState({});
-        const [editStageMode, setEditStageMode] = useState(false);
-        const [currentStageIndex, setCurrentStageIndex] = useState(null);
+        setStages(response.data.stages || []);
+      } catch (error) {
+        console.error("Error fetching batch details:", error);
+      }
+    };
 
-        const stagesConfig = {
-          plantation: {
-            inputs: [
-              { name: "plantationDate", label: "Date when the batch was planted" },
-              { name: "plantationTemperature", label: "Temperature in the plantation field (°C)" },
-              { name: "plantationHumidity", label: "Humidity level in the plantation field (%)" },
-              { name: "fertilizersUsed", label: "Type of fertilizers applied" },
-              { name: "pesticidesUsed", label: "Type of pesticides or herbicides used" },       
-            ],
-          },
-          leafSorting: {
-            inputs: [
-              { name: "sortingDate", label: "Date when sorting was done" },
-              { name: "totalLeaves", label: "Total leaves collected (g)" },
-              { name: "maturedLeaves", label: "Weight of matured leaves (g)" },
-              { name: "unmaturedLeaves", label: "Weight of unmatured leaves (g)" },
-              { name: "acceptedLeaves", label: "Leaves accepted for processing (g)" },
-              { name: "rejectedLeaves", label: "Leaves rejected due to maturity (g)" },
-              { name: "isBatchAccepted", label: "Batch Accepted (True/False)" },
-              { name: "responsiblePerson", label: "Responsible Person: Sorting Supervisor" },
-            ],
-          },
-          withering: {
-            inputs: [
-              { name: "witheringDate", label: "Date when withering was performed" },
-              { name: "initialWeight", label: "Weight of fresh leaves before withering (g)" },
-              { name: "finalWeight", label: "Weight of leaves after withering (g)" },
-              { name: "moistureReduction", label: "Percentage of moisture removed (%)" },
-              { name: "witheringDuration", label: "Time spent in withering (hours)" },
-              { name: "witheringTemperature", label: "Temperature during withering (°C)" },
-              { name: "witheringHumidity", label: "Humidity during withering (%)" },
-              { name: "witheringMethod", label: "Withering Method (Natural/Mechanical)" },
-              { name: "responsiblePerson", label: "Responsible Person: Withering Supervisor" },
-            ],
-          },
-          rolling: {
-            inputs: [
-              { name: "rollingDate", label: "Date when rolling was performed" },
-              { name: "rollingPressure", label: "Pressure applied during rolling (kg)" },
-              { name: "rollingTime", label: "Duration of rolling process (minutes)" },
-              { name: "rollingMachineUsed", label: "Type of machine used" },
-              { name: "rollingBatchWeight", label: "Weight of batch before and after rolling (g)" },
-              { name: "rollingTemperature", label: "Temperature during rolling (°C)" },
-              { name: "responsiblePerson", label: "Responsible Person: Rolling Supervisor" },
-            ],
-          },
-          oxidation: {
-            inputs: [
-              { name: "oxidationDate", label: "Date when oxidation was performed" },
-              { name: "oxidationTime", label: "Time for oxidation process (minutes)" },
-              { name: "oxidationTemperature", label: "Temperature maintained during oxidation (°C)" },
-              { name: "oxidationHumidity", label: "Humidity level during oxidation (%)" },
-              { name: "oxidationEnzymes", label: "Enzymes or catalysts used" },
-              { name: "colorChangeObservation", label: "Expected color change" },
-              { name: "responsiblePerson", label: "Responsible Person: Oxidation Supervisor" },
-            ],
-          },
-          drying: {
-            inputs: [
-              { name: "dryingDate", label: "Date when drying was performed" },
-              { name: "dryingTime", label: "Duration of drying (minutes)" },
-              { name: "dryingTemperature", label: "Temperature in drying chamber (°C)" },
-              { name: "finalMoistureContent", label: "Moisture content after drying (%)" },
-              { name: "dryingMachineUsed", label: "Type of dryer used" },
-              { name: "dryingBatchWeight", label: "Weight before and after drying (g)" },
-              { name: "responsiblePerson", label: "Responsible Person: Drying Supervisor" },
-            ],
-          },
-          sifting: {
-            inputs: [
-              { name: "siftingDate", label: "Date when sifting was performed" },
-              { name: "siftingMethod", label: "Sifting Method (Manual/Machine)" },
-              { name: "teaGrades", label: "Different tea grades separated" },
-              { name: "siftingBatchWeight", label: "Weight of batch before and after sifting (g)" },
-              { name: "siftingMachineUsed", label: "Type of machine used" },
-              { name: "responsiblePerson", label: "Responsible Person: Sifting Supervisor" },
-            ],
-          },
-          packing: {
-            inputs: [
-              { name: "packingDate", label: "Date when packing was done" },
-              { name: "packageType", label: "Type of packaging used (Paper, Tin, Plastic)" },
-              { name: "packageWeight", label: "Weight of tea in each package (g)" },
-              { name: "batchNumber", label: "Unique batch number assigned" },
-              { name: "expiryDate", label: "Expiry date of the product" },
-              { name: "packingMachineUsed", label: "Machine used for packing" },
-              { name: "responsiblePerson", label: "Responsible Person: Packing Supervisor" },
-            ],
-          },
-        };
-        
+    const fetchBlockchainData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/admin/blockchain/${batchId}`);
+        setBlockchainData(response.data);
+      } catch (error) {
+        console.error("Error fetching blockchain data:", error);
+      }
+    };
 
-        useEffect(() => {
-          const fetchBatchDetails = async () => {
-            try {
-              const response = await axios.get(`http://localhost:5000/admin/${batchId}`);
-              setBatch(response.data);
-              setBatchDetails({
-                supplierName: response.data.supplierName,
-                location: response.data.location,
-                dateStarted: response.data.dateStarted,
-                status: response.data.status,
-                qrCode: response.data.qrCode,
-              });
-              setStages(response.data.stages || []);
-            } catch (error) {
-              console.error("Error fetching batch details:", error);
-            }
-          };
+    const fetchHumidityData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/admin/${batchId}/humidity`);
+        setHumidityData(response.data);
+      } catch (error) {
+        console.error("Error fetching humidity data:", error);
+      }
+    };
 
-          const fetchBlockchainData = async () => {
-            try {
-              const response = await axios.get(`http://localhost:5000/admin/blockchain/${batchId}`);
-              setBlockchainData(response.data);
-            } catch (error) {
-              console.error("Error fetching blockchain data:", error);
-            }
-          };
+    fetchBatchDetails();
+    fetchBlockchainData();
+    fetchHumidityData();
+  }, [batchId]);
 
-          const fetchHumidityData = async () => {
-            try {
-              const response = await axios.get(`http://localhost:5000/admin/${batchId}/humidity`);
-              setHumidityData(response.data);
-            } catch (error) {
-              console.error("Error fetching humidity data:", error);
-            }
-          };
+  
+  const handleBatchDetailChange = (e) => {
+    const { name, value } = e.target;
+    setBatchDetails({ ...batchDetails, [name]: value });
+  };
 
-          const fetchPlantationHumidityData = async () => {
-            try {
-              const response = await axios.get(`http://localhost:5000/admin/${batchId}/plantation/humidity`); // Adjust the endpoint as needed
-              setPlantationHumidityData(response.data);
-            } catch (error) {
-              console.error("Error fetching plantation humidity data:", error);
-            }
-          };
+  const handleStageChange = (e) => {
+    const stage = e.target.value;
+    setSelectedStage(stage);
+    setStageInputs({});
+  };
 
-          fetchPlantationHumidityData();
-          fetchBatchDetails();
-          fetchBlockchainData();
-          fetchHumidityData();
-        }, [batchId]);
+  const handleStageInputChange = (e) => {
+    const { name, value } = e.target;
+    setStageInputs({ ...stageInputs, [name]: value });
+  };
 
-        
-        const handleBatchDetailChange = (e) => {
-          const { name, value } = e.target;
-          setBatchDetails({ ...batchDetails, [name]: value });
-        };
+  const handleEditStage = (index) => {
+    setEditStageMode(true);
+    setCurrentStageIndex(index);
+    setSelectedStage(stages[index].stage); // Set selected stage
+    setStageInputs({ ...stages[index].inputs }); // Clone inputs
+  };
+  
+  const validateStageInputs = () => {
+    for (const [key, value] of Object.entries(stageInputs)) {
+      if (!value) {
+        toast.error(`Field ${key} is required.`);
+        return false;
+      }
+      // Additional numeric validation can be added here
+    }
+    return true;
+  };
 
-        const handleStageChange = (e) => {
-          const stage = e.target.value;
-          setSelectedStage(stage);
-          setStageInputs({});
-        };
+  const handleUpdateStage = async (e) => {
+    e.preventDefault();
+    if (currentStageIndex === null) return;
+  
+    try {
+      const updatedStage = {
+        stage: selectedStage, // Keep the existing stage type
+        inputs: stageInputs,  // Updated input values
+      };
+  
+      const response = await axios.put(
+        `http://localhost:5000/admin/${batchId}/updatestage/${currentStageIndex}`,
+        updatedStage
+      );
+  
+      setStages(response.data.stages); // Ensure response returns the full updated array
+      setEditStageMode(false);
+      setCurrentStageIndex(null);
+      setStageInputs({});
+      toast.success("Stage Updated Successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toast.error("Failed to Update");
+      console.error("Error updating stage:", error);
+    }
+  };
+  
 
-        const handleStageInputChange = (e) => {
-          const { name, value } = e.target;
-          setStageInputs({ ...stageInputs, [name]: value });
-        };
+  const handleDeleteStage = async (index) => {
+    try {
+      await axios.delete(`http://localhost:5000/admin/${batchId}/deletestage/${index}`);
+      const updatedStages = stages.filter((_, i) => i !== index);
+      setStages(updatedStages);
+      toast.success("Stage Deleted Successfully!", { position: "top-right", autoClose: 3000 });
+    } catch (error) {
+      toast.error("Failed to Delete");
+    }
+  };
 
-        const handleEditStage = (index) => {
-          setEditStageMode(true);
-          setCurrentStageIndex(index);
-          setSelectedStage(stages[index].stage); // Set selected stage
-          setStageInputs({ ...stages[index].inputs }); // Clone inputs
-        };
-        
-        const validateStageInputs = () => {
-          for (const [key, value] of Object.entries(stageInputs)) {
-            if (!value) {
-              toast.error(`Field ${key} is required.`);
-              return false;
-            }
-            // Additional numeric validation can be added here
-          }
-          return true;
-        };
+  const handleAddStage = async (e) => {
+    e.preventDefault();
+    if (!selectedStage) {
+      toast.error("Please select a stage.");
+      return;
+    }
 
-        const handleUpdateStage = async (e) => {
-          e.preventDefault();
-          if (currentStageIndex === null) return;
-        
-          try {
-            const updatedStage = {
-              stage: selectedStage, // Keep the existing stage type
-              inputs: stageInputs,  // Updated input values
-            };
-        
-            const response = await axios.put(
-              `http://localhost:5000/admin/${batchId}/updatestage/${currentStageIndex}`,
-              updatedStage
-            );
-        
-            setStages(response.data.stages); // Ensure response returns the full updated array
-            setEditStageMode(false);
-            setCurrentStageIndex(null);
-            setStageInputs({});
-            toast.success("Stage Updated Successfully!", {
-              position: "top-right",
-              autoClose: 3000,
-            });
-          } catch (error) {
-            toast.error("Failed to Update");
-            console.error("Error updating stage:", error);
-          }
-        };
-        
-
-        const handleDeleteStage = async (index) => {
-          try {
-            await axios.delete(`http://localhost:5000/admin/${batchId}/deletestage/${index}`);
-            const updatedStages = stages.filter((_, i) => i !== index);
-            setStages(updatedStages);
-            toast.success("Stage Deleted Successfully!", { position: "top-right", autoClose: 3000 });
-          } catch (error) {
-            toast.error("Failed to Delete");
-          }
-        };
-
-        const handleAddStage = async (e) => {
-          e.preventDefault();
-          if (!selectedStage) {
-            toast.error("Please select a stage.");
-            return;
-          }
-
-          if (!validateStageInputs()) return;
-          
-          try {
-            const newStage = {
-              stage: selectedStage,
-              inputs: stageInputs,
-            };
-            const response = await axios.post(`http://localhost:5000/admin/${batchId}/addstage`, newStage);
-            setStages(response.data.stages);
-            setSelectedStage("");
-            setStageInputs({});
-            toast.success("Stage Added successfully!", { position: "top-right", autoClose: 3000 });
-          } catch (error) {
-            toast.error("Failed to Add Updates");
-          }
-        };
+    if (!validateStageInputs()) return;
+    
+    try {
+      const newStage = {
+        stage: selectedStage,
+        inputs: stageInputs,
+      };
+      const response = await axios.post(`http://localhost:5000/admin/${batchId}/addstage`, newStage);
+      setStages(response.data.stages);
+      setSelectedStage("");
+      setStageInputs({});
+      toast.success("Stage Added successfully!", { position: "top-right", autoClose: 3000 });
+    } catch (error) {
+      toast.error("Failed to Add Updates");
+    }
+  };
 
 
-        const validateBatchDetails = () => {
-          const { supplierName, location, dateStarted, status } = batchDetails;
-          if (!supplierName || !location || !dateStarted || !status) {
-            toast.error("All fields are required.");
-            return false;
-          }
-          return true;
-        };
+  const validateBatchDetails = () => {
+    const { supplierName, location, dateStarted, status } = batchDetails;
+    if (!supplierName || !location || !dateStarted || !status) {
+      toast.error("All fields are required.");
+      return false;
+    }
+    return true;
+  };
 
-        const handleUpdateBatchDetails = async (e) => {
-          e.preventDefault();
-          console.log("Updated Batch Details:", batchDetails); // Debugging
-        
-          try {
-            const updatedBatch = await axios.put(`http://localhost:5000/admin/${batchId}`, batchDetails);
-            if (!validateBatchDetails()) return;
-            
-            console.log("Updated Batch Response:", updatedBatch.data); // Debugging
-        
-            setBatch(updatedBatch.data.batch); // Ensure this updates state
-            setEditMode(false);
-            toast.success("Batch Updated Successfully!", { position: "top-right", autoClose: 3000 });
-          } catch (error) {
-            toast.error("Failed to Update Batch");
-            console.error("Error updating batch:", error);
-          }
-        };
-        
+  const handleUpdateBatchDetails = async (e) => {
+    e.preventDefault();
+    console.log("Updated Batch Details:", batchDetails); // Debugging
+  
+    try {
+      const updatedBatch = await axios.put(`http://localhost:5000/admin/${batchId}`, batchDetails);
+      if (!validateBatchDetails()) return;
+      
+      console.log("Updated Batch Response:", updatedBatch.data); // Debugging
+  
+      setBatch(updatedBatch.data.batch); // Ensure this updates state
+      setEditMode(false);
+      toast.success("Batch Updated Successfully!", { position: "top-right", autoClose: 3000 });
+    } catch (error) {
+      toast.error("Failed to Update Batch");
+      console.error("Error updating batch:", error);
+    }
+  };
+  
 
-        const handleDeleteBatch = async () => {
-          try {
-            await axios.delete(`http://localhost:5000/admin/${batchId}`);
-            toast.success("Batch Deleted Successfully!", { position: "top-right", autoClose: 3000 });
-          } catch (error) {
-            toast.error("Failed to Delete Batch");
-          }
-        };
+  const handleDeleteBatch = async () => {
+    try {
+      await axios.delete(`http://localhost:5000/admin/${batchId}`);
+      toast.success("Batch Deleted Successfully!", { position: "top-right", autoClose: 3000 });
+    } catch (error) {
+      toast.error("Failed to Delete Batch");
+    }
+  };
 
-        const downloadQRCode = async () => {
+  const downloadQRCode = async () => {
     try {
       // Create a temporary link element
       const link = document.createElement('a');
@@ -346,198 +335,238 @@
     }
   };
 
+  // Extract humidity data from stages
+  const getHumidityDataFromStages = () => {
+    const humidityData = [];
+    
+    stages.forEach((stage, index) => {
+      const inputs = stage.inputs;
+      let humidityValue = null;
+      let label = '';
+      
+      // Check different humidity fields based on stage type
+      if (stage.stage === 'plantation' && inputs.plantationHumidity) {
+        humidityValue = parseFloat(inputs.plantationHumidity);
+        label = `Plantation (${inputs.plantationDate || `Stage ${index + 1}`})`;
+      } else if (stage.stage === 'withering' && inputs.witheringHumidity) {
+        humidityValue = parseFloat(inputs.witheringHumidity);
+        label = `Withering (${inputs.witheringDate || `Stage ${index + 1}`})`;
+      } else if (stage.stage === 'oxidation' && inputs.oxidationHumidity) {
+        humidityValue = parseFloat(inputs.oxidationHumidity);
+        label = `Oxidation (${inputs.oxidationDate || `Stage ${index + 1}`})`;
+      }
+      
+      if (humidityValue !== null && !isNaN(humidityValue)) {
+        humidityData.push({
+          label: label,
+          humidity: humidityValue,
+          stage: stage.stage
+        });
+      }
+    });
+    
+    return humidityData;
+  };
 
-        // Prepare data for the plantation humidity chart
-        const plantationHumidityLabels = plantationhumidityData.map((data) => data.date); // Assuming you have a date field
-        const plantationHumidityValues = plantationhumidityData.map((data) => data.humidity); // Assuming you have a humidity field
+  const stageHumidityData = getHumidityDataFromStages();
+  const humidityLabels = stageHumidityData.map(data => data.label);
+  const humidityValues = stageHumidityData.map(data => data.humidity);
 
-        const plantationHumidityChartData = {
-          labels: plantationHumidityLabels,
-          datasets: [
-            {
-              label: "Plantation Humidity (%)",
-              data: plantationHumidityValues,
-              backgroundColor: "#4CAF50",
-              borderColor: "#4CAF50 ",
-              borderWidth: 1,
-            },
-          ],
-        };
+  const plantationHumidityChartData = {
+    labels: humidityLabels,
+    datasets: [
+      {
+        label: "Humidity Levels (%)",
+        data: humidityValues,
+        backgroundColor: stageHumidityData.map(data => {
+          switch(data.stage) {
+            case 'plantation': return "#4CAF50";
+            case 'withering': return "#2196F3";
+            case 'oxidation': return "#FF9800";
+            default: return "#9C27B0";
+          }
+        }),
+        borderColor: stageHumidityData.map(data => {
+          switch(data.stage) {
+            case 'plantation': return "#4CAF50";
+            case 'withering': return "#2196F3";
+            case 'oxidation': return "#FF9800";
+            default: return "#9C27B0";
+          }
+        }),
+        borderWidth: 1,
+      },
+    ],
+  };
 
-        
+  if (!batch) return <div className="mt-10 text-lg font-bold text-center">Loading...</div>;
 
-        if (!batch) return <div className="mt-10 text-lg font-bold text-center">Loading...</div>;
-
-        
-
-        return (
-          <div className="flex min-h-screen bg-gradient-to-br from-green-900 to-black">
-  <NavBarAdmin />
-  <ToastContainer />
-  
- 
-
-  <div className="ml-[250px] mt-[35px] p-6 w-full relative z-10">
-    {/* Modern Header */}
-    <div className="mb-8 ">
-      <h1 className="mb-3 text-2xl font-bold text-transparent bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text">
-        Batch Details
-      </h1>
-      <div className="w-24 h-1 rounded-full bg-gradient-to-r from-blue-500 to-white"></div>
-    </div>
-
-    {/* Main Batch Card */}
-    <div className="p-8 mb-8 border shadow-2xl backdrop-blur-xl bg-white/10 border-white/20 rounded-3xl hover:shadow-purple-500/25">
-      {!editMode ? (
-        <div className="space-y-6">
-          <div className="flex items-start gap-16">
-            {/* Batch Information */}
-            <div className="flex-1 space-y-6">
-              {/* Batch ID - Hero */}
-              <div className="cursor-pointer group">
-                <p className="mb-2 text-3xl font-bold text-white transition-colors duration-300 group-hover:text-blue-300">
-                  {batch.batchId}
-                </p>
-                <div className="w-16 h-0.5 bg-gradient-to-r from-blue-400 to-transparent group-hover:from-purple-400 transition-all duration-300"></div>
-              </div>
-
-              {/* Details Grid */}
-              <div className="grid gap-4">
-                <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
-                  <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 group-hover:scale-125"></div>
-                  <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Supplier:</span>
-                  <span className="text-lg font-semibold text-white">{batch.supplierName}</span>
-                </div>
-
-                <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
-                  <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 group-hover:scale-125"></div>
-                  <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Location:</span>
-                  <span className="text-lg font-semibold text-white">{batch.location}</span>
-                </div>
-
-                <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
-                  <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 group-hover:scale-125"></div>
-                  <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Date Started:</span>
-                  <span className="text-lg font-semibold text-white">{new Date(batch.dateStarted).toLocaleDateString()}</span>
-                </div>
-
-                <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
-                  <div className={`w-3 h-3 rounded-full mr-4 group-hover:scale-125 transition-transform duration-300 ${
-                    batch.status === 'Completed' 
-                      ? 'bg-gradient-to-r from-green-400 to-green-600 animate-pulse' 
-                      : 'bg-gradient-to-r from-yellow-400 to-orange-500 animate-pulse'
-                  }`}></div>
-                  <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Status:</span>
-                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold border-2 ${
-                    batch.status === 'Completed'
-                      ? 'bg-green-500/20 text-green-300 border-green-400/50 shadow-green-400/25'
-                      : 'bg-yellow-500/20 text-yellow-300 border-yellow-400/50 shadow-yellow-400/25'
-                  } shadow-lg backdrop-blur-sm`}>
-                    <div className={`w-2 h-2 rounded-full mr-2 ${
-                      batch.status === 'Completed' ? 'bg-green-400' : 'bg-yellow-400'
-                    } animate-pulse`}></div>
-                    {batch.status}
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            {/* QR Code Section */}
-            <div className="flex flex-col items-center">
-              <div className="relative group">
-                <div className="absolute inset-0 transition-opacity duration-300 opacity-75 bg-gradient-to-r from-blue-500 to-purple-500 rounded-3xl blur-lg group-hover:opacity-100"></div>
-                <div className="relative flex items-center justify-center w-48 h-48 p-4 transition-all duration-300 shadow-2xl backdrop-blur-xl bg-white/90 rounded-3xl group-hover:scale-105">
-                  <img src={batchDetails.qrCode} className="object-contain w-full h-full rounded-2xl" alt="QR Code" />
-                </div>
-              </div>
-              <p className="mt-4 font-medium text-center text-blue-200">QR Code</p>
-              <button
-          onClick={downloadQRCode}
-          className="flex items-center gap-2 px-4 py-2 mt-4 text-sm font-medium text-white transition-all duration-200 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-transparent"
-        >
-          <Download size={16} />
-          Download QR Code
-        </button>
-            </div>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex gap-4 pt-6 border-t border-white/10">
-            <button 
-              className="relative px-8 py-4 overflow-hidden font-semibold text-white transition-all duration-300 group bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25"
-              onClick={() => setEditMode(true)}
-            >
-              <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-emerald-400 to-emerald-500 group-hover:opacity-100"></div>
-              <span className="relative flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Edit Batch
-              </span>
-            </button>
-            
-            <button 
-              className="relative px-8 py-4 overflow-hidden font-semibold text-red-300 transition-all duration-300 border-2 group border-red-400/50 rounded-2xl hover:scale-105 hover:bg-red-500/20 hover:border-red-400 hover:shadow-2xl hover:shadow-red-500/25"
-              onClick={handleDeleteBatch}
-            >
-              <span className="relative flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Delete Batch
-              </span>
-            </button>
-          </div>
+  return (
+    <div className="flex min-h-screen bg-gray-900">
+      <NavBarAdmin />
+      <ToastContainer />
+      
+      <div className="ml-[250px] mt-[35px] p-6 w-full relative z-10">
+        {/* Modern Header */}
+        <div className="mb-8 ">
+          <h1 className="mb-3 text-2xl font-bold text-transparent bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text">
+            Batch Details
+          </h1>
+          <div className="w-24 h-1 rounded-full bg-gradient-to-r from-blue-500 to-white"></div>
         </div>
-      ) : (
-        <form onSubmit={handleUpdateBatchDetails} className="space-y-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-blue-200">Supplier Name</label>
-              <input 
-                type="text" 
-                name="supplierName" 
-                value={batchDetails.supplierName} 
-                onChange={handleBatchDetailChange} 
-                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
-              />
+
+        {/* Main Batch Card */}
+        <div className="p-8 mb-8 border shadow-2xl backdrop-blur-xl bg-white/10 border-white/20 rounded-3xl hover:shadow-purple-500/25">
+          {!editMode ? (
+            <div className="space-y-6">
+              <div className="flex items-start gap-16">
+                {/* Batch Information */}
+                <div className="flex-1 space-y-6">
+                  {/* Batch ID - Hero */}
+                  <div className="cursor-pointer group">
+                    <p className="mb-2 text-3xl font-bold text-white transition-colors duration-300 group-hover:text-blue-300">
+                      {batch.batchId}
+                    </p>
+                    <div className="w-16 h-0.5 bg-gradient-to-r from-blue-400 to-transparent group-hover:from-purple-400 transition-all duration-300"></div>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="grid gap-4">
+                    <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
+                      <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 group-hover:scale-125"></div>
+                      <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Supplier:</span>
+                      <span className="text-lg font-semibold text-white">{batch.supplierName}</span>
+                    </div>
+
+                    <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
+                      <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 group-hover:scale-125"></div>
+                      <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Location:</span>
+                      <span className="text-lg font-semibold text-white">{batch.location}</span>
+                    </div>
+
+                    <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
+                      <div className="w-3 h-3 mr-4 transition-transform duration-300 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 group-hover:scale-125"></div>
+                      <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Date Started:</span>
+                      <span className="text-lg font-semibold text-white">{new Date(batch.dateStarted).toLocaleDateString()}</span>
+                    </div>
+
+                    <div className="flex items-center p-4 transition-all duration-300 group rounded-2xl hover:bg-white/5">
+                      <div className={`w-3 h-3 rounded-full mr-4 group-hover:scale-125 transition-transform duration-300 ${
+                        batch.status === 'Completed' 
+                          ? 'bg-gradient-to-r from-green-400 to-green-600 animate-pulse' 
+                          : 'bg-gradient-to-r from-yellow-400 to-orange-500 animate-pulse'
+                      }`}></div>
+                      <span className="text-blue-200 font-medium mr-3 min-w-[100px]">Status:</span>
+                      <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold border-2 ${
+                        batch.status === 'Completed'
+                          ? 'bg-green-500/20 text-green-300 border-green-400/50 shadow-green-400/25'
+                          : 'bg-yellow-500/20 text-yellow-300 border-yellow-400/50 shadow-yellow-400/25'
+                      } shadow-lg backdrop-blur-sm`}>
+                        <div className={`w-2 h-2 rounded-full mr-2 ${
+                          batch.status === 'Completed' ? 'bg-green-400' : 'bg-yellow-400'
+                        } animate-pulse`}></div>
+                        {batch.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* QR Code Section */}
+                <div className="flex flex-col items-center">
+                  <div className="relative group">
+                    <div className="absolute inset-0 transition-opacity duration-300 opacity-75 bg-gradient-to-r from-blue-500 to-purple-500 rounded-3xl blur-lg group-hover:opacity-100"></div>
+                    <div className="relative flex items-center justify-center w-48 h-48 p-4 transition-all duration-300 shadow-2xl backdrop-blur-xl bg-white/90 rounded-3xl group-hover:scale-105">
+                      <img src={batchDetails.qrCode} className="object-contain w-full h-full rounded-2xl" alt="QR Code" />
+                    </div>
+                  </div>
+                  <p className="mt-4 font-medium text-center text-blue-200">QR Code</p>
+                  <button
+                    onClick={downloadQRCode}
+                    className="flex items-center gap-2 px-4 py-2 mt-4 text-sm font-medium text-white transition-all duration-200 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-transparent"
+                  >
+                    <Download size={16} />
+                    Download QR Code
+                  </button>
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-6 border-t border-white/10">
+                <button 
+                  className="relative px-8 py-4 overflow-hidden font-semibold text-white transition-all duration-300 group bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25"
+                  onClick={() => setEditMode(true)}
+                >
+                  <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-emerald-400 to-emerald-500 group-hover:opacity-100"></div>
+                  <span className="relative flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Batch
+                  </span>
+                </button>
+                
+                <button 
+                  className="relative px-8 py-4 overflow-hidden font-semibold text-red-300 transition-all duration-300 border-2 group border-red-400/50 rounded-2xl hover:scale-105 hover:bg-red-500/20 hover:border-red-400 hover:shadow-2xl hover:shadow-red-500/25"
+                  onClick={handleDeleteBatch}
+                >
+                  <span className="relative flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete Batch
+                  </span>
+                </button>
+              </div>
             </div>
-            
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-blue-200">Location</label>
-              <input 
-                type="text" 
-                name="location" 
-                value={batchDetails.location} 
-                onChange={handleBatchDetailChange} 
-                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-blue-200">Date Started</label>
-              <input 
-                type="date" 
-                name="dateStarted" 
-                value={batchDetails.dateStarted} 
-                onChange={handleBatchDetailChange} 
-                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-blue-200">Status</label>
-              <select 
-                name="status" 
-                value={batchDetails.status} 
-                onChange={handleBatchDetailChange} 
-                className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15"
-              >
-                <option value="In Progress" className="bg-slate-800">In Progress</option>
-                <option value="Completed" className="bg-slate-800">Completed</option>
-              </select>
-            </div>
-          </div>
+          ) : (
+            <form onSubmit={handleUpdateBatchDetails} className="space-y-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-blue-200">Supplier Name</label>
+                  <input 
+                    type="text" 
+                    name="supplierName" 
+                    value={batchDetails.supplierName} 
+                    onChange={handleBatchDetailChange} 
+                    className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-blue-200">Location</label>
+                  <input 
+                    type="text" 
+                    name="location" 
+                    value={batchDetails.location} 
+                    onChange={handleBatchDetailChange} 
+                    className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-blue-200">Date Started</label>
+                  <input 
+                    type="date" 
+                    name="dateStarted" 
+                    value={batchDetails.dateStarted} 
+                    onChange={handleBatchDetailChange} 
+                    className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15" 
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-blue-200">Status</label>
+                  <select 
+                    name="status" 
+                    value={batchDetails.status} 
+                    onChange={handleBatchDetailChange} 
+                    className="w-full p-4 text-white transition-all duration-300 border bg-white/10 border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm hover:bg-white/15"
+                  >
+                    <option value="In Progress" className="bg-slate-800">In Progress</option>
+                    <option value="Completed" className="bg-slate-800">Completed</option>
+                  </select>
+                </div>
+              </div>
           
           <div className="flex gap-4 pt-6 border-t border-white/10">
             <button 
