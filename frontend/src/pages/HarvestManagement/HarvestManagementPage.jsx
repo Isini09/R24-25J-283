@@ -86,13 +86,16 @@ const Harvest = () => {
           <div className="flex flex-col gap-10">
             <div className="flex items-center justify-between gap-5">
               <h1 className="text-xl font-medium text-green-400">Block ID</h1>
-              <input
+              <select
                 className="w-48 h-10 px-3 text-green-400 bg-transparent border-2 border-white rounded-lg focus:outline-none focus:border-blue-400"
                 onChange={(event) => setBlockId(event.target.value)}
                 type="text"
                 value={blockId}
                 placeholder="Enter Block ID"
-              />
+                
+              >
+                <option>Block A</option>
+              </select>
             </div>
 
             <div className="flex items-center justify-between gap-5">
