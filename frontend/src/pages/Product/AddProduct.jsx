@@ -53,7 +53,7 @@ const AddProductForm = () => {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-green-900 via-emerald-900 to-black">
+    <div className="relative min-h-screen overflow-hidden bg-gray-900">
       {/* Animated background elements */}
       
       {/* Floating geometric shapes */}
