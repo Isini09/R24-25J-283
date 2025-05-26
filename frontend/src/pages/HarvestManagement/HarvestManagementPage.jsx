@@ -1,30 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const Harvest = () => {
   const [showHarvest, setShowHarvest] = React.useState(true);
   const [showPrune, setShowPrune] = React.useState(false);
+  const [data, setData] = useState({});
+  const [blockId, setBlockId] = useState(" ");
+  const [harvestDate, setHarvestDate] = useState(" ");
+  const [pruneDate, setPruneDate] = useState(" ");
 
-  const getHarvestData = async () => {
+  const getHarvestData = async (blockId) => {
     try {
       const response = await axios.get(
         `http://localhost:5000/api/get-harvest-data/${blockId}`
       );
+      if (response.data) {
+        setData(response.data.blockData);
+      }
     } catch (error) {
       console.error("Error fetching harvest data:", error);
     }
   };
 
-  const [blockId, setBlockId] = useState(" ");
-  const [harvestDate, setHarvestDate] = useState(" ");
-  const [pruneDate, setPruneDate] = useState(" ");
-
   const postHarvestData = async () => {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/harvest-data",
-
-        { blockId, harvestDate }
+        { blockId, harvestDate, pruneDate }
       );
       alert(response.data.message);
       window.location.reload();
@@ -35,26 +37,11 @@ const Harvest = () => {
     }
   };
 
-  const postPruneData = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/harvest-data",
-        { blockId, pruningDate: pruneDate }
-      );
-      alert(response.data.message);
-      window.location.reload();
-    } catch (error) {
-      alert(error.message);
-      console.error("Error posting prune data:", error);
-      window.location.reload();
-    }
-  };
-
   const updateHarvestData = async () => {
     try {
       const response = await axios.put(
         `http://localhost:5000/api/harvest-data/${blockId}`,
-        { blockId, harvestDate }
+        { blockId, harvestDate, pruneDate }
       );
       console.log(response.data);
     } catch (error) {
@@ -62,17 +49,16 @@ const Harvest = () => {
     }
   };
 
-  const updatePruneData = async () => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/api/harvest-data/${blockId}`,
-        { blockId, pruneDate }
-      );
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error updating harvest data:", error);
+  useEffect(() => {
+    getHarvestData("div03");
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      console.log("Updated harvest data:", data);
     }
-  };
+  }, [data]);
+
   return (
     <div className="bg-[#111111] h-screen">
       <div
@@ -284,7 +270,6 @@ const Harvest = () => {
                     color: "black",
                   }}
                   type="button"
-                  onClick={postPruneData}
                 >
                   Submit
                 </button>

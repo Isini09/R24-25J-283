@@ -22,14 +22,32 @@ const getDatesByIdController = asyncHandler(async (req, res) => {
   }
 });
 
-// POST: SEND DATES OF THE BLOCKS TO THE DATABASE
 const harvestDateController = asyncHandler(async (req, res) => {
   try {
     const { blockId, harvestDate, pruningDate } = req.body;
 
+    // Check if blockId already exists
+    const { data: existingBlock, error: fetchError } = await database
+      .from("BlockData")
+      .select("*")
+      .eq("blockId", blockId)
+      .maybeSingle();
+
+    if (fetchError) {
+      return res.status(500).json({ error: "Failed to check existing block" });
+    }
+
+    if (existingBlock) {
+      return res
+        .status(400)
+        .json({ error: "Block ID already exists, update the data" });
+    }
+
+    // Insert new block data
     const { data, error } = await database
       .from("BlockData")
-      .insert({ blockId, harvestDate, pruningDate });
+      .insert([{ blockId, harvestDate, pruningDate }])
+      .select();
 
     if (error || !data) {
       return res.status(400).json({ error: "Something went wrong!" });
@@ -37,7 +55,9 @@ const harvestDateController = asyncHandler(async (req, res) => {
 
     res.status(200).json({ blockData: data });
   } catch (error) {
-    res.status(500).json({ error: `Server error! Please check ${error}` });
+    res
+      .status(500)
+      .json({ error: `Server error! Please check: ${error.message}` });
   }
 });
 
