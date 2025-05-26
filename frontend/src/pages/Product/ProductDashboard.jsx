@@ -1,179 +1,143 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import NavBarAdmin from "../../components/NavBarAdmin";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash, faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash, faAdd, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// Confirm Modal Component
-const ConfirmModal = ({ isOpen, message, onConfirm, onCancel }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
-        <p className="mb-6 text-lg font-medium text-gray-800">{message}</p>
-        <div className="flex justify-end gap-4">
-          <button onClick={onCancel} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-            Cancel
-          </button>
-          <button onClick={onConfirm} className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const ProductDashboard = () => {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedBatchId, setSelectedBatchId] = useState(null);
-
   const navigate = useNavigate();
-
-  // Fetch products from backend
-  const fetchProducts = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/admin/products");
-      setProducts(res.data);
-    } catch (error) {
-      toast.error("Failed to fetch products.");
-    }
-  };
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  // Handlers
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/admin");
+      setProducts(response.data);
+    } catch (error) {
+      toast.error("Error fetching products.");
+    }
+  };
+
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
+  };
+
+  const handleProductClick = (batchId) => {
+    navigate(`/product/${batchId}`);
+  };
+
+  const handleDelete = async (batchId) => {
+    try {
+      await axios.delete(`http://localhost:5000/admin/${batchId}`);
+      toast.success("Batch deleted successfully!");
+      fetchProducts();
+    } catch (error) {
+      toast.error("Failed to delete batch.");
+    }
   };
 
   const handleAddProduct = () => {
     navigate("/add-product");
   };
 
-  const handleEditProduct = (batchId) => {
-    navigate(`/edit-product/${batchId}`);
-  };
-
-  const handleDeleteClick = (batchId) => {
-    setSelectedBatchId(batchId);
-    setModalOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      await axios.delete(`http://localhost:5000/admin/products/${selectedBatchId}`);
-      toast.success("Product deleted successfully!");
-      fetchProducts();
-    } catch (error) {
-      toast.error("Failed to delete product.");
-    } finally {
-      setModalOpen(false);
-      setSelectedBatchId(null);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setModalOpen(false);
-    setSelectedBatchId(null);
-  };
-
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-900">
       <NavBarAdmin />
       <ToastContainer />
 
-      {/* Confirm Delete Modal */}
-      <ConfirmModal
-        isOpen={modalOpen}
-        message={`Are you sure you want to delete batch ${selectedBatchId}?`}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-      />
-
-      <div className="ml-[250px] mt-[25px] w-full px-10 py-8">
-        {/* Header */}
-        <div className="flex flex-col gap-4 mb-8 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-3xl font-bold text-gray-800">Product Management</h2>
-
-          <div className="flex flex-col items-center gap-4 md:flex-row">
-            {/* Search Box */}
-            <div className="flex items-center px-4 py-2 bg-white border border-gray-400 rounded-full">
+      <div className="ml-[250px] mt-[25px] w-full py-8 px-6">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-white">Product Management</h2>
+          <div className="flex items-center space-x-4">
+            {/* Search Bar */}
+            <div className="flex items-center px-4 py-3 transition-colors duration-300 bg-gray-800 border border-gray-600 rounded-full shadow-lg hover:border-green-500">
               <input
                 type="text"
-                placeholder="Search by batch ID"
+                placeholder="Search products..."
                 value={search}
                 onChange={handleSearchChange}
-                className="text-sm bg-transparent focus:outline-none md:text-base"
+                className="w-full text-white placeholder-gray-400 bg-transparent focus:outline-none"
               />
-              <FontAwesomeIcon icon={faSearch} className="ml-2 text-gray-600" />
+              <FontAwesomeIcon icon={faSearch} className="ml-2 text-green-400" />
             </div>
 
             {/* Add Product Button */}
             <button
               onClick={handleAddProduct}
-              className="flex items-center gap-2 px-6 py-2 text-white transition bg-green-700 rounded-full hover:bg-white hover:text-green-700 hover:border hover:border-green-700"
+              className="flex items-center px-6 py-3 text-white transition-all duration-300 transform rounded-full shadow-md bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 hover:shadow-lg hover:scale-105"
             >
-              <span>Add Product</span>
-              <FontAwesomeIcon icon={faPlus} />
+              <span className="mr-2 font-semibold">Add Product</span>
+              <FontAwesomeIcon icon={faAdd} />
             </button>
           </div>
         </div>
 
-        {/* Product Table */}
-        <div className="overflow-x-auto bg-white border border-gray-300 rounded-lg shadow">
-          <table className="min-w-full text-left text-gray-700">
-            <thead className="font-semibold bg-gray-200">
-              <tr>
-                <th className="px-6 py-3">QR Code</th>
-                <th className="px-6 py-3">Batch ID</th>
-                <th className="px-6 py-3">Location</th>
-                <th className="px-6 py-3">Date Started</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products
-                .filter((product) => product.batchId.toLowerCase().includes(search.toLowerCase()))
-                .map((product) => (
-                  <tr key={product.batchId} className="border-t hover:bg-green-50">
-                    <td className="px-6 py-4">
-                      <img src={product.qrCode} alt="QR Code" className="object-contain w-16 h-16" />
-                    </td>
-                    <td className="px-6 py-4 font-medium">{product.batchId}</td>
-                    <td className="px-6 py-4">{product.location}</td>
-                    <td className="px-6 py-4">{product.dateStarted}</td>
-                    <td className="px-6 py-4">{product.status}</td>
-                    <td className="px-6 py-4 space-x-4 text-right">
-                      <button
-                        onClick={() => handleEditProduct(product.batchId)}
-                        className="text-yellow-500 hover:text-yellow-700"
-                        title="Edit"
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(product.batchId)}
-                        className="text-red-500 hover:text-red-700"
-                        title="Delete"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+        {/* Product List */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {products
+            .filter((product) => product.batchId.toLowerCase().includes(search.toLowerCase()))
+            .map((product) => (
+              <div
+                key={product.batchId}
+                className="p-6 transition-all duration-300 transform bg-gray-800 border border-gray-700 cursor-pointer rounded-xl hover:bg-gradient-to-br hover:from-green-700 hover:to-green-800 hover:border-green-500 hover:shadow-xl hover:scale-105 group"
+                onClick={() => handleProductClick(product.batchId)}
+              >
+                <div className="flex flex-col items-center">
+                  {/* QR Code */}
+                  <div className="p-3 mb-4 bg-white rounded-lg shadow-md">
+                    <img src={product.qrCode} alt="QR Code" className="w-16 h-16" />
+                  </div>
+                  
+                  {/* Batch ID */}
+                  <p className="mb-4 text-xl font-bold text-center text-white group-hover:text-green-100">
+                    {product.batchId}
+                  </p>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4 mt-auto">
+                    <button 
+                      className="p-2 text-yellow-400 transition-all duration-200 rounded-full hover:text-yellow-300 hover:bg-yellow-400 hover:bg-opacity-20"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(product.batchId);
+                      }}
+                      className="p-2 text-red-400 transition-all duration-200 rounded-full hover:text-red-300 hover:bg-red-400 hover:bg-opacity-20"
+                    >
+                      <FontAwesomeIcon icon={faTrash} className="text-lg" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
         </div>
+
+        {/* Empty State */}
+        {products.filter((product) => product.batchId.toLowerCase().includes(search.toLowerCase())).length === 0 && (
+          <div className="py-16 text-center">
+            <div className="mb-4 text-lg text-gray-400">
+              {search ? "No products found matching your search." : "No products available."}
+            </div>
+            <button
+              onClick={handleAddProduct}
+              className="px-6 py-3 text-white transition-all duration-300 rounded-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+            >
+              Add Your First Product
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
