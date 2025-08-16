@@ -98,6 +98,7 @@ function Dashboard() {
   const [productList, setProductList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const dummyUserData = [
     { month: 'Jan', users: 30 },
@@ -198,6 +199,25 @@ function Dashboard() {
     }
   }, [searchTerm, productList]);
 
+  //fetch total products
+  useEffect(() => {
+    const fetchTotalProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/admin/total-products');
+        setTotalProducts(response.data.totalProducts);
+      } catch (error) {
+        console.error('Error fetching total products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTotalProducts();
+  }, []);
+
+  
+
+
   return (
     <div className="relative flex h-screen overflow-hidden bg-gray-900">
       {/* Animated dark background */}
@@ -220,8 +240,8 @@ function Dashboard() {
         {/* Stat cards */}
         <div className="grid grid-cols-1 gap-6 mb-10 md:grid-cols-4">
           <StatCard title="Total Products" value={totalProducts} icon="boxes" />
-          <StatCard title="Verified Products" value={verifiedProducts} icon="check" />
-          <StatCard title="Total Suppliers" value={totalSuppliers} icon="truck" />
+          <StatCard title="Verified Products" value="20" icon="check" />
+          <StatCard title="Total Suppliers" value="6" icon="truck" />
         </div>
 
         {/* Charts Section */}

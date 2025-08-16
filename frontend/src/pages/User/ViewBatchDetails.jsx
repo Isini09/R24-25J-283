@@ -7,17 +7,12 @@ import {
   CheckCircle, 
   Clock, 
   Award,
-  FileText,
   Loader2,
   AlertCircle,
   ArrowRight,
   Shield,
   Search,
-  Link,
-  Hash,
-  Activity,
   QrCode,
-  Database,
   Camera,
   Upload,
   X
@@ -120,7 +115,7 @@ const UserBatchView = () => {
   let currentBatchIndex = 0;
 
 const simulateQRDetection = (canvas) => {
-  const mockQRCodes = ['BATCH-002', 'BATCH-003', 'BATCH-008'];
+  const mockQRCodes = ['BATCH-002', 'BATCH-008', 'BATCH-003'];
 
   // Get the current batch in order
   const currentBatch = mockQRCodes[currentBatchIndex];
@@ -218,7 +213,7 @@ const simulateQRDetection = (canvas) => {
 
   return (
     <div className="">
-    <div className='fixed top-0 left-0 z-50 w-full bg-white shadow'><NavbarUser/></div>
+    <div className='fixed top-0 left-0 z-50 w-full bg-gray-900 shadow'><NavbarUser/></div>
     <div className="min-h-screen pt-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       
       <div className="px-4 py-8 mx-auto mt-10 max-w-7xl">

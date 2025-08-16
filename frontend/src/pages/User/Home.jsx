@@ -32,6 +32,7 @@ import {
   Award,
 } from "lucide-react";
 import { Linkedin, Facebook, Instagram } from "lucide-react";
+import NavbarUser from '../../components/NavbarUser'
 
 export default function ModernAgriWebsite() {
   const [activeSection, setActiveSection] = useState(0);
@@ -244,7 +245,8 @@ export default function ModernAgriWebsite() {
   return (
     <div className="min-h-screen overflow-hidden text-white bg-gradient-to-br from-black to-black">
       {/* Navigation */}
-      <nav className="fixed top-0 z-50 w-full px-6 py-4 border-b bg-black/80 backdrop-blur-lg border-white/10">
+      <div><NavbarUser/></div>
+      {/* <nav className="fixed top-0 z-50 w-full px-6 py-4 border-b bg-black/80 backdrop-blur-lg border-white/10">
         <div className="container flex items-center justify-between mx-auto">
           <div className="text-2xl font-bold text-transparent bg-gradient-to-r from-green-600 to-green-800 bg-clip-text">
             Cyber Seeds
@@ -279,7 +281,7 @@ export default function ModernAgriWebsite() {
             </a>
           </div>
         </div>
-      </nav>
+      </nav> */}
 
       {/* Hero Section */}
       <section
@@ -487,6 +489,68 @@ export default function ModernAgriWebsite() {
                 <Database className="w-16 h-16 mx-auto mb-4 text-purple-400" />
                 <div className="text-3xl font-bold text-purple-400">2.4TB</div>
                 <div className="text-gray-400">Data Collected</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+       {/* Digital Twin Section */}
+      <section id="twin" className="relative py-20">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-800/10 to-transparent"></div>
+        <div className="container relative z-10 px-6 mx-auto">
+          <div className={`transition-all duration-1000 transform ${isVisible.twin ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
+            <div className="mb-16 text-center">
+              <h2 className="py-4 mb-6 text-5xl font-bold text-transparent md:text-6xl bg-gradient-to-r from-green-600 to-green-800 bg-clip-text">
+                Digital Twin Technology
+              </h2>
+              <p className="max-w-4xl mx-auto text-xl leading-relaxed text-gray-300">
+                Create virtual replicas of your agricultural operations with real-time data synchronization. 
+                Monitor, analyze, and optimize every aspect of your farm through advanced digital modeling 
+                and predictive analytics.
+              </p>
+            </div>
+
+            <div className="grid items-center gap-12 mb-16 lg:grid-cols-2">
+              <div>
+                <h3 className="mb-8 text-3xl font-bold text-green-600">Real-time Farm Visualization</h3>
+                <div className="space-y-6">
+                  {digitalTwinFeatures.map((feature, index) => (
+                    <div key={index} className="flex items-start gap-4 p-4 border bg-white/5 backdrop-blur-lg rounded-xl border-white/10">
+                      <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-green-600 to-green-800">
+                        <feature.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="mb-1 text-lg font-semibold">{feature.title}</h4>
+                        <p className="text-gray-400">{feature.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="p-8 border bg-gradient-to-br from-green-600/20 to-green-800/20 rounded-3xl border-white/20">
+                <div className="text-center">
+                  <h4 className="mb-4 text-2xl font-bold">Live Dashboard</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="p-3 rounded-lg bg-white/10">
+                      <div className="text-lg font-bold text-green-400">98.5%</div>
+                      <div className="text-gray-400">System Uptime</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-white/10">
+                      <div className="text-lg font-bold text-green-600">1,247</div>
+                      <div className="text-gray-400">Active Sensors</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-white/10">
+                      <div className="text-lg font-bold text-green-700">24/7</div>
+                      <div className="text-gray-400">Monitoring</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-white/10">
+                      <div className="text-lg font-bold text-green-400">Real-time</div>
+                      <div className="text-gray-400">Data Sync</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -758,7 +822,7 @@ export default function ModernAgriWebsite() {
           >
             <div className="mb-16 text-center">
               <h2 className="py-4 mb-6 text-5xl font-bold text-transparent md:text-6xl bg-gradient-to-r from-green-600 to-green-800 bg-clip-text">
-                AI Harvest Prediction
+                Prediction Models
               </h2>
               <p className="max-w-4xl mx-auto text-xl leading-relaxed text-gray-300">
                 Our suite of advanced prediction models leverages historical
@@ -841,6 +905,134 @@ export default function ModernAgriWebsite() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+     {/* Our Team Section */}
+      <section id="team" className="relative py-20">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-800/5 to-blue-800/5"></div>
+        <div className="container relative z-10 px-6 mx-auto">
+          <div className={`transition-all duration-1000 transform ${isVisible.team ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
+            <div className="mb-16 text-center">
+              <h2 className="py-4 mb-6 text-5xl font-bold text-transparent md:text-6xl bg-gradient-to-r from-green-600 to-green-800 bg-clip-text">
+                Meet Our Team
+              </h2>
+              <p className="max-w-4xl mx-auto text-xl leading-relaxed text-gray-300">
+                Our passionate team of agricultural experts, technology innovators, and sustainability champions 
+                is dedicated to revolutionizing farming through cutting-edge digital solutions.
+              </p>
+            </div>
+
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {/* Team Member 1 */}
+              <div className="p-8 transition-all transform border bg-white/5 backdrop-blur-lg rounded-2xl border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl">
+                <div className="mb-6 text-center">
+                  <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-600 to-green-800">
+                    <img className="rounded-md w-[100px] h-[100px]" src='https://media.licdn.com/dms/image/v2/C5103AQFegdxbEYwL6w/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1544772904525?e=1753920000&v=beta&t=iyucx_exE2QvMU1NVa3teBqcHa6Yfjb-JDGyaPOpy10'/>
+                  </div>
+                  <h3 className="mb-1 text-2xl font-bold text-green-400">Ms. Gaya Thamali Dassanayake</h3>
+                  <p className="text-lg text-gray-300">SUPERVISOR</p>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-green-400">
+                </div>
+              </div>
+
+              {/* Team Member 2 */}
+              <div className="p-8 transition-all transform border bg-white/5 backdrop-blur-lg rounded-2xl border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl">
+                <div className="mb-6 text-center">
+                  <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-600 to-green-600">
+                    <img className="rounded-md w-[100px] h-[100px]" src='https://static.sliit.lk/profile/wishalyat-1671092630.JPG'/>
+                  </div>
+                  <h3 className="mb-1 text-2xl font-bold text-blue-400">Ms. Wishalya Thissera
+</h3>
+                  <p className="text-lg text-gray-300">CO-SUPERVISOR</p>
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm text-blue-400">
+                  
+                </div>
+              </div>
+
+              {/* Team Member 3 */}
+              <div className="p-8 transition-all transform border bg-white/5 backdrop-blur-lg rounded-2xl border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl">
+                <div className="mb-6 text-center">
+                  <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-600 to-green-600">
+                    <img className="rounded-md w-[100px] h-[100px]" src='https://media.licdn.com/dms/image/v2/C5603AQFqtzMmK32rFw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1641450237986?e=1753920000&v=beta&t=soGZYvmLCuRe5-eG-RnrBDRYxfuAZMd1YvFzTUjY13I'/>
+                  </div>
+                  <h3 className="mb-1 text-2xl font-bold text-purple-400">De Silva Y. S. I</h3>
+                  <p className="text-lg text-gray-300">FACULTY OF COMPUTING</p>
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm text-purple-400">
+                </div>
+              </div>
+
+              {/* Team Member 4 */}
+              <div className="p-8 transition-all transform border bg-white/5 backdrop-blur-lg rounded-2xl border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl">
+                <div className="mb-6 text-center">
+                  <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-yellow-600 to-green-600">
+                    <img className="rounded-md w-[100px] h-[100px]" src='https://media.licdn.com/dms/image/v2/D4E03AQFPl1KDv2MjGQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725515661795?e=1753920000&v=beta&t=nnLNviOOoTKCgdyEa98TFbc7abCLdvXpibuedvL6wOw'/>
+                  </div>
+                  <h3 className="mb-1 text-2xl font-bold text-yellow-400">Suraweera S. A. U. K</h3>
+                  <p className="text-lg text-gray-300">FACULTY OF COMPUTING</p>
+                </div>
+            
+                <div className="flex items-center gap-2 text-sm text-yellow-400">
+                  
+                </div>
+              </div>
+
+              {/* Team Member 5 */}
+              <div className="p-8 transition-all transform border bg-white/5 backdrop-blur-lg rounded-2xl border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl">
+                <div className="mb-6 text-center">
+                  <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-600 to-green-600">
+                    <img className="rounded-md w-[100px] h-[100px]" src='https://media.licdn.com/dms/image/v2/D5603AQEzTuowcFoOoA/profile-displayphoto-shrink_800_800/B56ZbhdQV.GsAc-/0/1747539265534?e=1753920000&v=beta&t=vbAQWedWf_QLoZRf57OK1uwcUhNbAjqcaO4yL50n0-w'/>
+                  </div>
+                  <h3 className="mb-1 text-2xl font-bold text-red-400">De Silva K. C. N</h3>
+                  <p className="text-lg text-gray-300">FACULTY OF COMPUTING</p>
+                </div>
+              
+                <div className="flex items-center gap-2 text-sm text-red-400">
+                 
+                </div>
+              </div>
+
+              {/* Team Member 6 */}
+              <div className="p-8 transition-all transform border bg-white/5 backdrop-blur-lg rounded-2xl border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl">
+                <div className="mb-6 text-center">
+                  <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-indigo-600 to-green-600">
+                    <img className="rounded-md w-[100px] h-[100px]" src='https://media.licdn.com/dms/image/v2/D5603AQFbndoA_VbBSg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1704968714709?e=1753920000&v=beta&t=a90IuE12FlLb6S_2k3U8npGSLFev83lUZNvZ1pSb0ig'/>
+                  </div>
+                  <h3 className="mb-1 text-2xl font-bold text-indigo-400">Piyasinghe W. A. K. P</h3>
+                  <p className="text-lg text-gray-300">FACULTY OF COMPUTING</p>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm text-indigo-400">
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 text-center">
+        <div className="container px-6 mx-auto">
+          <h2 className="py-4 mb-6 text-4xl font-bold text-transparent md:text-5xl bg-gradient-to-r from-green-600 to-green-800 bg-clip-text">
+            Ready to Transform Your Agriculture?
+          </h2>
+          <p className="max-w-2xl mx-auto mb-8 text-xl text-gray-300">
+            Join thousands of farmers and agricultural businesses already revolutionizing their operations with smart IoT, carbon tracking, and AI-powered insights.
+          </p>
+          <div className="flex flex-col justify-center gap-6 sm:flex-row">
+            <button className="px-8 py-4 text-lg font-semibold transition-all transform rounded-full shadow-2xl bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 hover:scale-105">
+              Start Free Trial
+            </button>
+            <button className="px-8 py-4 text-lg font-semibold transition-all transform border-2 border-green-600 rounded-full hover:bg-green-600 hover:text-white hover:scale-105">
+              Contact Sales
+            </button>
           </div>
         </div>
       </section>

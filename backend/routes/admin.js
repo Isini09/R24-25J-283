@@ -16,6 +16,7 @@ router.get('/total-products', async (req, res) => {
   }
 });
 
+
 router.post('/add', async (req, res) => {
   try {
     console.log("Received data:", req.body);

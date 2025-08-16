@@ -72,12 +72,13 @@ function CarbonFootprintTrackingPage() {
     } else {
       setIsLow(false);
       setGuidance([
-        "You’re creating cleaner air for your community.",
-        "You’re preserving the climate stability that future farmers depend on.",
+        "You're creating cleaner air for your community.",
+        "You're preserving the climate stability that future farmers depend on.",
         "You inspire other tea producers to follow your green path.",
       ]);
     }
   };
+
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Animated dark background */}
@@ -89,111 +90,161 @@ function CarbonFootprintTrackingPage() {
 
       <UpperPanel />
 
-      <div className="relative z-10 flex items-start justify-center w-full min-h-screen gap-8 p-6 text-green-100">
-        {/* Left Panel - Doughnut Chart and Form */}
-        <div className="flex flex-col items-center justify-start w-full h-full">
-          <div className="w-3/4 mx-auto">
-            {/* Form Container */}
-            <div className="p-6 transition-all duration-300 border shadow-xl bg-gray-800/90 backdrop-blur-sm border-green-500/20 rounded-2xl hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/30">
-              <h3 className="mb-4 text-lg font-semibold text-green-300">
-                Add today yield
-              </h3>
-              <form onSubmit={sendYieldData} className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="carbonInput"
-                    className="block mb-2 text-sm font-medium text-gray-300"
-                  >
-                    Total yield
-                  </label>
-                  <input
-                    type="number"
-                    id="carbonInput"
-                    value={formData.totalYield}
-                    name="totalYield"
-                    onChange={(event) =>
-                      setFormData({ totalYield: event.target.value })
-                    }
-                    placeholder="Enter total yield value"
-                    className="w-full px-4 py-3 text-green-100 placeholder-gray-400 transition-all duration-300 border rounded-lg bg-gray-700/50 border-green-500/30 focus:outline-none focus:border-green-400/70 focus:ring-2 focus:ring-green-400/20"
-                    required
-                  />
-                </div>
+      {/* Main Content Container */}
+      <div className="relative z-10 p-6">
+        {/* Page Header */}
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text">
+            CARBON FOOTPRINT CONTROL PANEL
+          </h1>
+          <p className="text-gray-400">
+            Monitor and forecast carbon emissions for sustainable tea production
+          </p>
+        </div>
+
+        {/* TOP SECTION - Daily Yield Input (Full Width) */}
+        <div className="w-full mx-auto mb-8 max-w-7xl">
+          <div className="p-6 transition-all duration-300 border shadow-xl bg-gray-800/90 backdrop-blur-sm border-green-500/20 rounded-2xl hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/30">
+            <h3 className="mb-4 text-xl font-semibold text-green-300">
+              Daily Yield Input
+            </h3>
+            <form onSubmit={sendYieldData} className="flex flex-col gap-4 md:flex-row">
+              <div className="flex-1">
+                <label
+                  htmlFor="carbonInput"
+                  className="block mb-2 text-sm font-medium text-gray-300"
+                >
+                  Total Yield (kg)
+                </label>
+                <input
+                  type="number"
+                  id="carbonInput"
+                  value={formData.totalYield}
+                  name="totalYield"
+                  onChange={(event) =>
+                    setFormData({ totalYield: event.target.value })
+                  }
+                  placeholder="Enter total yield value"
+                  className="w-full px-4 py-3 text-green-100 placeholder-gray-400 transition-all duration-300 border rounded-lg bg-gray-700/50 border-green-500/30 focus:outline-none focus:border-green-400/70 focus:ring-2 focus:ring-green-400/20"
+                  required
+                />
+              </div>
+              <div className="flex items-end md:w-48">
                 <button
                   type="submit"
                   className="w-full px-6 py-3 font-medium text-white transition transform border rounded-lg shadow-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 border-green-500/30 hover:border-green-400/50 hover:shadow-xl hover:scale-105"
                 >
-                  Submit Data
+                  Analyze Emissions
                 </button>
-              </form>
+              </div>
+            </form>
+            
+            {/* Prediction Display */}
+            {prediction && (
+              <div className="p-4 mt-6 border rounded-lg border-green-500/20 bg-gray-700/30">
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    {isLow ? (
+                      <ErrorIcon color="error" />
+                    ) : (
+                      <CheckCircleOutlineIcon color="success" />
+                    )}
+                  </Avatar>
+                  <div>
+                    <span className="text-sm text-gray-300">Emission Status:</span>
+                    <span className={`ml-2 text-lg font-semibold ${
+                      isLow ? 'text-red-400' : 'text-green-400'
+                    }`}>
+                      {prediction}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* MIDDLE SECTION - Forecast and Guidance (Side by Side) */}
+        <div className="w-full mx-auto mb-8 max-w-7xl">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            
+            {/* Left: Emission Forecast */}
+            <div className="relative p-6 transition-all duration-300 border shadow-xl bg-gray-800/90 backdrop-blur-sm border-green-500/20 rounded-2xl hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/30">
+              <h3 className="mb-4 text-xl font-semibold text-green-300">
+                Emission Forecast
+              </h3>
+              <div className="relative h-64">
+                <ForecastChart />
+                <div className="absolute w-20 h-20 rounded-full -top-2 -right-2 bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-xl"></div>
+              </div>
+            </div>
+
+            {/* Right: Guidance Section */}
+            <div className="relative p-6 transition-all duration-300 border shadow-xl bg-gray-800/90 backdrop-blur-sm border-green-500/20 rounded-2xl hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/30">
+              <h3 className="mb-4 text-xl font-semibold text-green-300">
+                Guidance To Reduce The Emission
+              </h3>
+              <div className="text-white">
+                {guidance.length > 0 ? (
+                  <List
+                    sx={{
+                      width: "100%",
+                      bgcolor: 'transparent',
+                      maxHeight: '240px',
+                      overflow: 'auto',
+                    }}
+                  >
+                    {guidance.map((guide, index) => (
+                      <ListItem 
+                        key={index} 
+                        sx={{ 
+                          display: 'flex', 
+                          alignItems: 'flex-start',
+                          py: 1,
+                          px: 0,
+                        }}
+                      >
+                        <ListItemAvatar sx={{ minWidth: '45px' }}>
+                          <Avatar sx={{ width: 30, height: 30 }}>
+                            {isLow ? (
+                              <ErrorIcon color="error" />
+                            ) : (
+                              <CheckCircleOutlineIcon color="success" />
+                            )}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText 
+                          primary={guide}
+                          sx={{
+                            '& .MuiListItemText-primary': {
+                              color: 'rgb(209 213 219)',
+                              fontSize: '0.9rem',
+                              lineHeight: 1.4,
+                            }
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <div className="py-8 text-center text-gray-400">
+                    Submit yield data to get emission guidance
+                  </div>
+                )}
+              </div>
+              <div className="absolute w-16 h-16 rounded-full -top-2 -right-2 bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-xl"></div>
             </div>
           </div>
         </div>
 
-        {/* Right Panel - Control Panel */}
-        <div className="flex flex-col w-full h-full">
-          <div className="mb-8 text-center">
-            <h1 className="mb-2 text-4xl font-bold text-transparent bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text">
-              CONTROL PANEL
-            </h1>
-            <p className="text-gray-400">
-              Monitor and forecast carbon emissions
-            </p>
-          </div>
-
-          {/* Forecast Chart Container */}
-          <div className="w-3/4 p-6 mx-auto mb-8 transition-all duration-300 border shadow-xl bg-gray-800/90 backdrop-blur-sm border-green-500/20 rounded-2xl hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/30">
-            <h3 className="mb-4 text-lg font-semibold text-green-300">
-              Emission Forecast
+        {/* BOTTOM SECTION - Doughnut Chart (Full Width) */}
+        <div className="w-full mx-auto max-w-7xl">
+          <div className="p-6 transition-all duration-300 border shadow-xl bg-gray-800/90 backdrop-blur-sm border-green-500/20 rounded-2xl hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/30">
+            <h3 className="mb-4 text-xl font-semibold text-green-300">
+              Emission Distribution
             </h3>
-            <div className="relative">
-              <ForecastChart />
-              <div className="absolute w-20 h-20 rounded-full -top-2 -right-2 bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-xl"></div>
-            </div>
-          </div>
-
-          {/* Empty Bar Chart Container */}
-          <div className="w-3/4 p-6 mx-auto transition-all duration-300 border shadow-xl bg-gray-800/90 backdrop-blur-sm border-green-500/20 rounded-2xl hover:shadow-2xl hover:bg-gray-800/95 hover:border-green-400/30">
-            <h3 className="mb-4 text-lg font-semibold text-green-300">
-              Guidance To Reduce The Emission
-            </h3>
-            <div className="relative h-64">
-              {/* Empty Box*/}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="mb-2 text-4xl text-gray-600">
-                    <div className="flex flex-col">
-                      {guidance.length > 0 && (
-                        <List
-                          sx={{
-                            width: "100%",
-                            maxWidth: 600,
-                            bgcolor: "background.paper",
-                            mb: 1,
-                          }}
-                        >
-                          {guidance.map((guide, index) => (
-                            <ListItem key={index}>
-                              <ListItemAvatar>
-                                <Avatar>
-                                  {isLow ? (
-                                    <ErrorIcon color="error" />
-                                  ) : (
-                                    <CheckCircleOutlineIcon color="success" />
-                                  )}
-                                </Avatar>
-                              </ListItemAvatar>
-                              <ListItemText primary={guide} />
-                            </ListItem>
-                          ))}
-                        </List>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute w-16 h-16 rounded-full -top-2 -right-2 bg-gradient-to-br from-green-500/20 to-emerald-500/20 blur-xl"></div>
+            <div className="flex items-center justify-center h-64">
+              <DoughnutChart />
             </div>
           </div>
         </div>

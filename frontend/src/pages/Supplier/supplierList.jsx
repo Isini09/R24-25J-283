@@ -1,554 +1,594 @@
-// import React, { useState, useEffect } from 'react';
-// import { Search, Plus, Edit, Trash2, Save, X, Building, Phone, Mail, MapPin, FileText, Award, Package } from 'lucide-react';
-// import NavbarAdmin from '../../components/NavBarAdmin'
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash, faAdd, faSearch, faTimes, faSave } from "@fortawesome/free-solid-svg-icons";
+import NavBarAdmin from "../../components/NavBarAdmin";
 
-// const SupplierCRUD = () => {
-//   const [suppliers, setSuppliers] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const [editingSupplier, setEditingSupplier] = useState(null);
-//   const [searchTerm, setSearchTerm] = useState('');
-//   const [formData, setFormData] = useState({
-//     supplierId: '',
-//     name: '',
-//     companyName: '',
-//     location: '',
-//     contact: {
-//       email: '',
-//       phone: '',
-//       address: ''
-//     },
-//     certifications: [],
-//     ingredientsSupplied: [],
-//     documents: [],
-//     status: 'Active'
-//   });
+const ConfirmModal = ({ isOpen, message, onConfirm, onCancel }) => {
+  if (!isOpen) return null;
 
-//   const statuses = ['Active', 'Inactive', 'Pending', 'Suspended'];
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-sm p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-xl">
+        <p className="mb-6 text-lg font-medium text-white">{message}</p>
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-gray-300 transition border border-gray-600 rounded hover:bg-gray-700 hover:text-white"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 text-white transition bg-red-600 rounded hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-//   // API Base URL - adjust this to match your backend
-//   const API_BASE = 'http://localhost:3000/api'; // Update this to your actual API base URL
+const SupplierModal = ({ isOpen, supplier, onSave, onCancel }) => {
+  const [formData, setFormData] = useState({
+    supplierId: '',
+    name: '',
+    companyName: '',
+    location: '',
+    contact: '',
+    certifications: '',
+    ingredientsSupplied: '',
+    documents: '',
+    status: 'Active'
+  });
 
-//   const filteredSuppliers = suppliers.filter(supplier =>
-//     supplier.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     supplier.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//     supplier.supplierId?.toLowerCase().includes(searchTerm.toLowerCase())
-//   );
+  useEffect(() => {
+    if (supplier) {
+      setFormData(supplier);
+    } else {
+      setFormData({
+        supplierId: '',
+        name: '',
+        companyName: '',
+        location: '',
+        contact: '',
+        certifications: '',
+        ingredientsSupplied: '',
+        documents: '',
+        status: 'Active'
+      });
+    }
+  }, [supplier, isOpen]);
 
-//   // Fetch all suppliers
-//   const fetchSuppliers = async () => {
-//     setLoading(true);
-//     try {
-//       const response = await fetch(`${API_BASE}/supplier`);
-//       if (response.ok) {
-//         const data = await response.json();
-//         setSuppliers(data);
-//       } else {
-//         console.error('Failed to fetch suppliers');
-//       }
-//     } catch (error) {
-//       console.error('Error fetching suppliers:', error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-//   // Load suppliers on component mount
-//   useEffect(() => {
-//     fetchSuppliers();
-//   }, []);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.supplierId || !formData.name) {
+      return;
+    }
+    onSave(formData);
+  };
 
-//   const resetForm = () => {
-//     setFormData({
-//       supplierId: '',
-//       name: '',
-//       companyName: '',
-//       location: '',
-//       contact: {
-//         email: '',
-//         phone: '',
-//         address: ''
-//       },
-//       certifications: [],
-//       ingredientsSupplied: [],
-//       documents: [],
-//       status: 'Active'
-//     });
-//     setEditingSupplier(null);
-//   };
+  if (!isOpen) return null;
 
-//   const openModal = (supplier = null) => {
-//     if (supplier) {
-//       setFormData({
-//         supplierId: supplier.supplierId || '',
-//         name: supplier.name || '',
-//         companyName: supplier.companyName || '',
-//         location: supplier.location || '',
-//         contact: supplier.contact || { email: '', phone: '', address: '' },
-//         certifications: supplier.certifications || [],
-//         ingredientsSupplied: supplier.ingredientsSupplied || [],
-//         documents: supplier.documents || [],
-//         status: supplier.status || 'Active'
-//       });
-//       setEditingSupplier(supplier);
-//     } else {
-//       resetForm();
-//     }
-//     setIsModalOpen(true);
-//   };
-
-//   const closeModal = () => {
-//     setIsModalOpen(false);
-//     resetForm();
-//   };
-
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     if (name.startsWith('contact.')) {
-//       const contactField = name.split('.')[1];
-//       setFormData(prev => ({
-//         ...prev,
-//         contact: {
-//           ...prev.contact,
-//           [contactField]: value
-//         }
-//       }));
-//     } else {
-//       setFormData(prev => ({ ...prev, [name]: value }));
-//     }
-//   };
-
-//   const handleArrayChange = (field, value) => {
-//     const items = value.split(',').map(item => item.trim()).filter(item => item);
-//     setFormData(prev => ({ ...prev, [field]: items }));
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-
-//     try {
-//       if (editingSupplier) {
-//         // Update existing supplier
-//         const response = await fetch(`${API_BASE}/supplier/${editingSupplier._id}`, {
-//           method: 'PUT',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify(formData),
-//         });
-
-//         if (response.ok) {
-//           const updatedSupplier = await response.json();
-//           setSuppliers(suppliers.map(supplier =>
-//             supplier._id === editingSupplier._id ? updatedSupplier : supplier
-//           ));
-//         } else {
-//           console.error('Failed to update supplier');
-//         }
-//       } else {
-//         // Create new supplier
-//         const response = await fetch(`${API_BASE}/supplier/add`, {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify(formData),
-//         });
-
-//         if (response.ok) {
-//           const newSupplier = await response.json();
-//           setSuppliers([...suppliers, newSupplier]);
-//         } else {
-//           const error = await response.json();
-//           console.error('Failed to create supplier:', error);
-//           alert(error.error || 'Failed to create supplier');
-//         }
-//       }
-//       closeModal();
-//     } catch (error) {
-//       console.error('Error saving supplier:', error);
-//       alert('Error saving supplier');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleDelete = async (supplier) => {
-//     if (window.confirm(`Are you sure you want to delete ${supplier.name}?`)) {
-//       setLoading(true);
-//       try {
-//         const response = await fetch(`${API_BASE}/supplier/${supplier._id}`, {
-//           method: 'DELETE',
-//         });
-
-//         if (response.ok) {
-//           setSuppliers(suppliers.filter(s => s._id !== supplier._id));
-//         } else {
-//           console.error('Failed to delete supplier');
-//         }
-//       } catch (error) {
-//         console.error('Error deleting supplier:', error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-//       <NavbarAdmin/>
-//       <div className="mx-auto max-w-7xl">
-//         {/* Header */}
-//         <div className="p-8 mb-8 bg-white border border-gray-100 shadow-xl rounded-2xl">
-//           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-//             <div>
-//               <h1 className="text-4xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
-//                 Supplier Management
-//               </h1>
-//               <p className="mt-2 text-gray-600">Manage your supplier database with ease</p>
-//             </div>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-800 border border-gray-700 rounded-lg shadow-xl">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+          <h3 className="text-xl font-semibold text-white">
+            {supplier ? 'Edit Supplier' : 'Add New Supplier'}
+          </h3>
+          <button
+            onClick={onCancel}
+            className="text-gray-400 hover:text-white"
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+        
+        <div className="p-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="form-group">
+              <label className="block mb-2 text-sm font-medium text-gray-300">
+                Supplier ID *
+              </label>
+              <input
+                type="text"
+                name="supplierId"
+                value={formData.supplierId}
+                onChange={handleInputChange}
+                required
+                disabled={!!supplier}
+                className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500 disabled:opacity-50"
+                placeholder="Enter supplier ID"
+              />
+            </div>
             
-//             <div className="flex flex-col gap-4 sm:flex-row">
-//               <div className="relative">
-//                 <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
-//                 <input
-//                   type="text"
-//                   placeholder="Search suppliers..."
-//                   value={searchTerm}
-//                   onChange={(e) => setSearchTerm(e.target.value)}
-//                   className="w-full py-3 pl-10 pr-4 transition-all duration-200 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:w-80"
-//                 />
-//               </div>
-              
-//               <button
-//                 onClick={() => openModal()}
-//                 className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-//               >
-//                 <Plus className="w-5 h-5" />
-//                 Add Supplier
-//               </button>
-//             </div>
-//           </div>
-//         </div>
+            <div className="form-group">
+              <label className="block mb-2 text-sm font-medium text-gray-300">
+                Name *
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500"
+                placeholder="Enter supplier name"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="block mb-2 text-sm font-medium text-gray-300">
+                Company Name
+              </label>
+              <input
+                type="text"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500"
+                placeholder="Enter company name"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="block mb-2 text-sm font-medium text-gray-300">
+                Location
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500"
+                placeholder="Enter location"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="block mb-2 text-sm font-medium text-gray-300">
+                Contact
+              </label>
+              <input
+                type="text"
+                name="contact"
+                value={formData.contact}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500"
+                placeholder="Enter contact information"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="block mb-2 text-sm font-medium text-gray-300">
+                Status
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500"
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="mt-4 form-group">
+            <label className="block mb-2 text-sm font-medium text-gray-300">
+              Certifications
+            </label>
+            <textarea
+              name="certifications"
+              value={formData.certifications}
+              onChange={handleInputChange}
+              rows="3"
+              className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500"
+              placeholder="Enter certifications (comma separated)"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label className="block mb-2 text-sm font-medium text-gray-300">
+              Ingredients Supplied
+            </label>
+            <textarea
+              name="ingredientsSupplied"
+              value={formData.ingredientsSupplied}
+              onChange={handleInputChange}
+              rows="3"
+              className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500"
+              placeholder="Enter ingredients supplied (comma separated)"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label className="block mb-2 text-sm font-medium text-gray-300">
+              Documents
+            </label>
+            <textarea
+              name="documents"
+              value={formData.documents}
+              onChange={handleInputChange}
+              rows="2"
+              className="w-full px-4 py-2 text-white bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-green-500"
+              placeholder="Enter document URLs or descriptions"
+            />
+          </div>
+          
+          <div className="flex justify-end gap-4 mt-6">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-6 py-2 text-gray-300 transition border border-gray-600 rounded hover:bg-gray-700 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSubmit({ preventDefault: () => {} })}
+              className="flex items-center gap-2 px-6 py-2 text-white transition bg-green-600 rounded hover:bg-green-700"
+            >
+              <FontAwesomeIcon icon={faSave} />
+              Save Supplier
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-//         {/* Suppliers Grid */}
-//         {loading && (
-//           <div className="py-12 text-center">
-//             <div className="inline-block w-8 h-8 border-b-2 border-blue-600 rounded-full animate-spin"></div>
-//             <p className="mt-4 text-gray-600">Loading suppliers...</p>
-//           </div>
-//         )}
+const SupplierManagement = () => {
+  const [suppliers, setSuppliers] = useState([]);
+  const [search, setSearch] = useState("");
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, supplierId: null });
+  const [supplierModal, setSupplierModal] = useState({ isOpen: false, supplier: null });
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState({ type: '', text: '' });
 
-//         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-//           {filteredSuppliers.map((supplier) => (
-//             <div key={supplier._id} className="overflow-hidden transition-all duration-300 transform bg-white border border-gray-100 shadow-lg rounded-2xl hover:shadow-xl hover:-translate-y-1">
-//               <div className="p-6">
-//                 <div className="flex items-start justify-between mb-4">
-//                   <div className="flex-1">
-//                     <h3 className="mb-1 text-xl font-bold text-gray-900">{supplier.name}</h3>
-//                     <p className="text-sm text-gray-600">ID: {supplier.supplierId}</p>
-//                   </div>
-//                   <div className="flex gap-2">
-//                     <button
-//                       onClick={() => openModal(supplier)}
-//                       className="p-2 text-blue-600 transition-colors rounded-lg hover:bg-blue-50"
-//                     >
-//                       <Edit className="w-4 h-4" />
-//                     </button>
-//                     <button
-//                       onClick={() => handleDelete(supplier)}
-//                       className="p-2 text-red-600 transition-colors rounded-lg hover:bg-red-50"
-//                     >
-//                       <Trash2 className="w-4 h-4" />
-//                     </button>
-//                   </div>
-//                 </div>
+  useEffect(() => {
+    fetchSuppliers();
+  }, []);
 
-//                 <div className="space-y-3">
-//                   <div className="flex items-center gap-2 text-gray-600">
-//                     <Building className="w-4 h-4" />
-//                     <span className="text-sm">{supplier.companyName || 'N/A'}</span>
-//                   </div>
-                  
-//                   <div className="flex items-center gap-2 text-gray-600">
-//                     <MapPin className="w-4 h-4" />
-//                     <span className="text-sm">{supplier.location || 'N/A'}</span>
-//                   </div>
-                  
-//                   {supplier.contact?.email && (
-//                     <div className="flex items-center gap-2 text-gray-600">
-//                       <Mail className="w-4 h-4" />
-//                       <span className="text-sm">{supplier.contact.email}</span>
-//                     </div>
-//                   )}
-                  
-//                   {supplier.contact?.phone && (
-//                     <div className="flex items-center gap-2 text-gray-600">
-//                       <Phone className="w-4 h-4" />
-//                       <span className="text-sm">{supplier.contact.phone}</span>
-//                     </div>
-//                   )}
+  const showMessage = (type, text) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+  };
 
-//                   {supplier.ingredientsSupplied && supplier.ingredientsSupplied.length > 0 && (
-//                     <div className="flex items-start gap-2 text-gray-600">
-//                       <Package className="w-4 h-4 mt-0.5" />
-//                       <div className="text-sm">
-//                         <span className="font-medium">Supplies:</span>
-//                         <div className="flex flex-wrap gap-1 mt-1">
-//                           {supplier.ingredientsSupplied.slice(0, 3).map((ingredient, idx) => (
-//                             <span key={idx} className="px-2 py-1 text-xs text-blue-800 bg-blue-100 rounded-md">
-//                               {ingredient}
-//                             </span>
-//                           ))}
-//                           {supplier.ingredientsSupplied.length > 3 && (
-//                             <span className="text-xs text-gray-500">+{supplier.ingredientsSupplied.length - 3} more</span>
-//                           )}
-//                         </div>
-//                       </div>
-//                     </div>
-//                   )}
+  const fetchSuppliers = async () => {
+    try {
+      setLoading(true);
+      // Simulate API call - replace with actual endpoint
+      const response = await fetch('/supplier/list');
+      if (response.ok) {
+        const data = await response.json();
+        setSuppliers(data);
+      } else {
+        throw new Error('Failed to fetch suppliers');
+      }
+    } catch (error) {
+      console.error('Error fetching suppliers:', error);
+      // For demo purposes, use mock data
+      setSuppliers([
+        {
+          supplierId: 'SUP001',
+          name: 'John Smith',
+          companyName: 'Organic Farms Ltd',
+          location: 'California, USA',
+          contact: 'john@organicfarms.com',
+          certifications: 'Organic, Non-GMO',
+          ingredientsSupplied: 'Tomatoes, Peppers, Herbs',
+          documents: 'Certificate.pdf',
+          status: 'Active'
+        },
+        {
+          supplierId: 'SUP002',
+          name: 'Maria Rodriguez',
+          companyName: 'Fresh Produce Co',
+          location: 'Texas, USA',
+          contact: 'maria@freshproduce.com',
+          certifications: 'FDA Approved',
+          ingredientsSupplied: 'Lettuce, Spinach, Carrots',
+          documents: 'License.pdf',
+          status: 'Active'
+        },
+        {
+          supplierId: 'SUP003',
+          name: 'David Wilson',
+          companyName: 'Premium Ingredients Inc',
+          location: 'New York, USA',
+          contact: 'david@premium.com',
+          certifications: 'ISO 9001, HACCP',
+          ingredientsSupplied: 'Spices, Seasonings, Oils',
+          documents: 'Quality_Report.pdf',
+          status: 'Pending'
+        },
+        {
+          supplierId: 'SUP004',
+          name: 'Sarah Johnson',
+          companyName: 'Green Valley Supplies',
+          location: 'Oregon, USA',
+          contact: 'sarah@greenvalley.com',
+          certifications: 'Organic, Fair Trade',
+          ingredientsSupplied: 'Grains, Legumes, Seeds',
+          documents: 'Certification.pdf',
+          status: 'Inactive'
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//                   {supplier.certifications && supplier.certifications.length > 0 && (
-//                     <div className="flex items-start gap-2 text-gray-600">
-//                       <Award className="w-4 h-4 mt-0.5" />
-//                       <div className="text-sm">
-//                         <span className="font-medium">Certifications:</span>
-//                         <div className="flex flex-wrap gap-1 mt-1">
-//                           {supplier.certifications.slice(0, 2).map((cert, idx) => (
-//                             <span key={idx} className="px-2 py-1 text-xs text-green-800 bg-green-100 rounded-md">
-//                               {cert}
-//                             </span>
-//                           ))}
-//                           {supplier.certifications.length > 2 && (
-//                             <span className="text-xs text-gray-500">+{supplier.certifications.length - 2} more</span>
-//                           )}
-//                         </div>
-//                       </div>
-//                     </div>
-//                   )}
-//                 </div>
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
 
-//                 <div className="pt-4 mt-4 border-t border-gray-100">
-//                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-//                     supplier.status === 'Active' ? 'bg-green-100 text-green-800' :
-//                     supplier.status === 'Inactive' ? 'bg-gray-100 text-gray-800' :
-//                     supplier.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-//                     'bg-red-100 text-red-800'
-//                   }`}>
-//                     {supplier.status}
-//                   </span>
-//                 </div>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
+  const handleDeleteClick = (supplierId) => {
+    setConfirmModal({ isOpen: true, supplierId });
+  };
 
-//         {filteredSuppliers.length === 0 && !loading && (
-//           <div className="py-12 text-center">
-//             <Building className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-//             <h3 className="mb-2 text-xl font-semibold text-gray-600">No suppliers found</h3>
-//             <p className="text-gray-500">Try adjusting your search or add a new supplier.</p>
-//           </div>
-//         )}
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await fetch(`/supplier/list/${confirmModal.supplierId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        setSuppliers(prev => prev.filter(s => s.supplierId !== confirmModal.supplierId));
+        showMessage('success', 'Supplier deleted successfully!');
+      } else {
+        throw new Error('Failed to delete supplier');
+      }
+    } catch (error) {
+      console.error('Error deleting supplier:', error);
+      showMessage('error', 'Failed to delete supplier.');
+    } finally {
+      setConfirmModal({ isOpen: false, supplierId: null });
+    }
+  };
 
-//         {/* Modal */}
-//         {isModalOpen && (
-//           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-//             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-//               <div className="p-8">
-//                 <div className="flex items-center justify-between mb-6">
-//                   <h2 className="text-3xl font-bold text-gray-900">
-//                     {editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}
-//                   </h2>
-//                   <button
-//                     onClick={closeModal}
-//                     className="p-2 text-gray-400 transition-colors rounded-lg hover:text-gray-600 hover:bg-gray-100"
-//                   >
-//                     <X className="w-6 h-6" />
-//                   </button>
-//                 </div>
+  const handleCancelDelete = () => {
+    setConfirmModal({ isOpen: false, supplierId: null });
+  };
 
-//                 <form onSubmit={handleSubmit} className="space-y-6">
-//                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-//                     {/* Basic Information */}
-//                     <div className="space-y-4">
-//                       <h3 className="pb-2 text-lg font-semibold text-gray-800 border-b">Basic Information</h3>
-                      
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Supplier ID *
-//                         </label>
-//                         <input
-//                           type="text"
-//                           name="supplierId"
-//                           value={formData.supplierId}
-//                           onChange={handleInputChange}
-//                           required
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter supplier ID"
-//                         />
-//                       </div>
+  const handleAddSupplier = () => {
+    setSupplierModal({ isOpen: true, supplier: null });
+  };
 
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Name *
-//                         </label>
-//                         <input
-//                           type="text"
-//                           name="name"
-//                           value={formData.name}
-//                           onChange={handleInputChange}
-//                           required
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter supplier name"
-//                         />
-//                       </div>
+  const handleEditSupplier = (supplier) => {
+    setSupplierModal({ isOpen: true, supplier });
+  };
 
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Company Name
-//                         </label>
-//                         <input
-//                           type="text"
-//                           name="companyName"
-//                           value={formData.companyName}
-//                           onChange={handleInputChange}
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter company name"
-//                         />
-//                       </div>
+  const handleSaveSupplier = async (formData) => {
+    try {
+      const isEdit = !!supplierModal.supplier;
+      const url = isEdit ? `/supplier/list/${formData.supplierId}` : '/supplier/add';
+      const method = isEdit ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        const savedSupplier = await response.json();
+        
+        if (isEdit) {
+          setSuppliers(prev => prev.map(s => 
+            s.supplierId === formData.supplierId ? savedSupplier : s
+          ));
+          showMessage('success', 'Supplier updated successfully!');
+        } else {
+          setSuppliers(prev => [...prev, savedSupplier]);
+          showMessage('success', 'Supplier added successfully!');
+        }
+        
+        setSupplierModal({ isOpen: false, supplier: null });
+      } else {
+        throw new Error('Failed to save supplier');
+      }
+    } catch (error) {
+      console.error('Error saving supplier:', error);
+      showMessage('error', 'Failed to save supplier.');
+    }
+  };
 
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Location
-//                         </label>
-//                         <input
-//                           type="text"
-//                           name="location"
-//                           value={formData.location}
-//                           onChange={handleInputChange}
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter location"
-//                         />
-//                       </div>
+  const handleCancelSupplier = () => {
+    setSupplierModal({ isOpen: false, supplier: null });
+  };
 
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Status
-//                         </label>
-//                         <select
-//                           name="status"
-//                           value={formData.status}
-//                           onChange={handleInputChange}
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                         >
-//                           {statuses.map(status => (
-//                             <option key={status} value={status}>{status}</option>
-//                           ))}
-//                         </select>
-//                       </div>
-//                     </div>
+  const filteredSuppliers = suppliers.filter(supplier =>
+    supplier.name.toLowerCase().includes(search.toLowerCase()) ||
+    supplier.supplierId.toLowerCase().includes(search.toLowerCase()) ||
+    supplier.companyName.toLowerCase().includes(search.toLowerCase())
+  );
 
-//                     {/* Contact Information */}
-//                     <div className="space-y-4">
-//                       <h3 className="pb-2 text-lg font-semibold text-gray-800 border-b">Contact Information</h3>
-                      
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Email
-//                         </label>
-//                         <input
-//                           type="email"
-//                           name="contact.email"
-//                           value={formData.contact.email}
-//                           onChange={handleInputChange}
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter email address"
-//                         />
-//                       </div>
+  return (
+    <div className="flex min-h-screen bg-gray-900">
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        message={`Are you sure you want to delete supplier ${confirmModal.supplierId}?`}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
 
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Phone
-//                         </label>
-//                         <input
-//                           type="tel"
-//                           name="contact.phone"
-//                           value={formData.contact.phone}
-//                           onChange={handleInputChange}
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter phone number"
-//                         />
-//                       </div>
+      {/* Supplier Modal */}
+      <SupplierModal
+        isOpen={supplierModal.isOpen}
+        supplier={supplierModal.supplier}
+        onSave={handleSaveSupplier}
+        onCancel={handleCancelSupplier}
+      />
 
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Address
-//                         </label>
-//                         <textarea
-//                           name="contact.address"
-//                           value={formData.contact.address}
-//                           onChange={handleInputChange}
-//                           rows={3}
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 resize-none rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter address"
-//                         />
-//                       </div>
+      <div className="ml-[250px] mt-[25px] w-full py-8">
+        {/* Message */}
+        {message.text && (
+          <div className={`mb-6 p-4 rounded border ${
+            message.type === 'success' 
+              ? 'bg-green-800 text-green-200 border-green-600' 
+              : 'bg-red-800 text-red-200 border-red-600'
+          }`}>
+            {message.text}
+          </div>
+        )}
 
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Certifications
-//                         </label>
-//                         <input
-//                           type="text"
-//                           value={formData.certifications.join(', ')}
-//                           onChange={(e) => handleArrayChange('certifications', e.target.value)}
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter certifications (comma-separated)"
-//                         />
-//                       </div>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <NavBarAdmin/>
+          <h2 className="text-2xl font-bold text-white">Supplier Management</h2>
+          <div className="flex items-center space-x-4">
+            {/* Search Box */}
+            <div className="flex items-center px-4 py-2 bg-gray-800 border border-gray-600 rounded-full">
+              <input
+                type="text"
+                placeholder="Search suppliers..."
+                value={search}
+                onChange={handleSearchChange}
+                className="w-full text-white placeholder-gray-400 bg-transparent focus:outline-none"
+              />
+              <FontAwesomeIcon icon={faSearch} className="text-gray-400" />
+            </div>
 
-//                       <div>
-//                         <label className="block mb-2 text-sm font-medium text-gray-700">
-//                           Ingredients Supplied
-//                         </label>
-//                         <textarea
-//                           value={formData.ingredientsSupplied.join(', ')}
-//                           onChange={(e) => handleArrayChange('ingredientsSupplied', e.target.value)}
-//                           rows={3}
-//                           className="w-full px-4 py-3 transition-all border border-gray-200 resize-none rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//                           placeholder="Enter ingredients supplied (comma-separated)"
-//                         />
-//                       </div>
-//                     </div>
-//                   </div>
+            {/* Add Supplier Button */}
+            <button
+              onClick={handleAddSupplier}
+              className="flex items-center px-6 py-2 text-white transition bg-green-600 rounded-full hover:bg-white hover:text-green-600 hover:border hover:border-green-600"
+            >
+              <span className="mr-2">Add Supplier</span>
+              <FontAwesomeIcon icon={faAdd} />
+            </button>
+          </div>
+        </div>
 
-//                   <div className="flex justify-end gap-4 pt-6 border-t">
-//                     <button
-//                       type="button"
-//                       onClick={closeModal}
-//                       className="px-6 py-3 text-gray-600 transition-colors bg-gray-100 rounded-xl hover:bg-gray-200"
-//                     >
-//                       Cancel
-//                     </button>
-//                     <button
-//                       type="submit"
-//                       disabled={loading}
-//                       className="flex items-center gap-2 px-6 py-3 text-white transition-all shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 hover:shadow-xl disabled:opacity-50"
-//                     >
-//                       <Save className="w-5 h-5" />
-//                       {loading ? 'Saving...' : (editingSupplier ? 'Update' : 'Create')}
-//                     </button>
-//                   </div>
-//                 </form>
-//               </div>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
+        {/* Supplier Grid */}
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-white">Loading suppliers...</div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredSuppliers.map((supplier) => (
+              <div
+                key={supplier.supplierId}
+                className="p-6 transition bg-gray-800 border border-gray-700 cursor-pointer rounded-xl hover:bg-green-600 hover:text-white group"
+              >
+                <div className="flex flex-col">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-white group-hover:text-white">
+                        {supplier.name}
+                      </h3>
+                      <p className="text-sm text-gray-400 group-hover:text-green-100">
+                        {supplier.companyName}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                      supplier.status === 'Active' 
+                        ? 'bg-green-700 text-green-200' 
+                        : supplier.status === 'Pending'
+                        ? 'bg-yellow-700 text-yellow-200'
+                        : 'bg-gray-700 text-gray-300'
+                    }`}>
+                      {supplier.status}
+                    </span>
+                  </div>
 
-// export default SupplierCRUD;
+                  {/* Details */}
+                  <div className="mb-4 space-y-2">
+                    <div className="flex items-center text-sm">
+                      <span className="w-20 font-medium text-gray-300 group-hover:text-green-100">ID:</span>
+                      <span className="text-white group-hover:text-white">{supplier.supplierId}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="w-20 font-medium text-gray-300 group-hover:text-green-100">Location:</span>
+                      <span className="text-white truncate group-hover:text-white">{supplier.location}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <span className="w-20 font-medium text-gray-300 group-hover:text-green-100">Contact:</span>
+                      <span className="text-white truncate group-hover:text-white">{supplier.contact}</span>
+                    </div>
+                  </div>
+
+                  {/* Ingredients */}
+                  {supplier.ingredientsSupplied && (
+                    <div className="mb-4">
+                      <span className="text-sm font-medium text-gray-300 group-hover:text-green-100">Ingredients:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {supplier.ingredientsSupplied.split(',').slice(0, 3).map((ingredient, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 text-xs text-gray-300 bg-gray-700 rounded group-hover:bg-green-700 group-hover:text-green-100"
+                          >
+                            {ingredient.trim()}
+                          </span>
+                        ))}
+                        {supplier.ingredientsSupplied.split(',').length > 3 && (
+                          <span className="px-2 py-1 text-xs text-gray-300 bg-gray-700 rounded group-hover:bg-green-700 group-hover:text-green-100">
+                            +{supplier.ingredientsSupplied.split(',').length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex justify-center gap-4 mt-auto">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditSupplier(supplier);
+                      }}
+                      className="text-yellow-400 hover:text-yellow-300 group-hover:text-yellow-200"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(supplier.supplierId);
+                      }}
+                      className="text-red-400 hover:text-red-300 group-hover:text-red-200"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && filteredSuppliers.length === 0 && (
+          <div className="py-20 text-center">
+            <div className="mb-4 text-6xl text-gray-600">🏢</div>
+            <p className="mb-2 text-xl text-gray-400">No suppliers found</p>
+            <p className="text-gray-500">
+              {search ? "Try adjusting your search terms" : "Start by adding your first supplier"}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SupplierManagement;
