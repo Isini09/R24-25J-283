@@ -1,23 +1,22 @@
 import React, { useState } from "react";
+import axios from "axios";
 import UpperPanel from "../../components/UpperPanel";
-
-
 
 const YieldPrediction = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  const [predictionData, setPredictionData] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [predictionData, setPredictionData] = useState("");
+  
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
-    // Reset uploaded file when new file is selected
-    setUploadedFile(null);
   };
 
   const handleFileUpload = async (e) => {
@@ -28,32 +27,25 @@ const YieldPrediction = () => {
       return;
     }
 
-    setIsUploading(true);
-
-    // Simulate file upload with FormData
     const formData = new FormData();
     formData.append("image", selectedFile);
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock successful response
-      const mockResponse = {
-        data: {
-          filename: `uploaded_${selectedFile.name}`,
-          message: "File uploaded successfully!"
+      const response = await axios.post(
+        "http://localhost:5000/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      };
-      
-      setUploadedFile(mockResponse.data.filename);
-      alert(mockResponse.data.message);
+      );
+      setUploadedFile(response.data.filename);
+      alert(response.data.message);
     } catch (error) {
       setUploadedFile(null);
       console.error("Upload error:", error);
-      alert("Upload failed. Please try again.");
-    } finally {
-      setIsUploading(false);
+      alert(error.data.message);
     }
   };
 
@@ -65,48 +57,30 @@ const YieldPrediction = () => {
       return;
     }
 
-    setIsAnalyzing(true);
-    setPredictionData(null);
-
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // Mock prediction response
-      const mockPredictionResponse = {
-        data: {
-          predictedYield: "2,850 kg/hectare",
-          confidence: "87%",
-          factors: [
-            "Optimal soil moisture detected",
-            "Healthy crop density observed",
-            "Favorable weather conditions predicted",
-            "No pest or disease indicators found"
-          ],
-          recommendations: [
-            "Continue current irrigation schedule",
-            "Apply nitrogen fertilizer in 2 weeks",
-            "Monitor for early blight symptoms",
-            "Harvest timing: 45-50 days from now"
-          ]
+      const response = await axios.post(
+        "http://localhost:5000/api/yield-predict",
+        {
+          startDate,
+          endDate,
+          file: uploadedFile,
         }
-      };
-      
-      setPredictionData(mockPredictionResponse.data);
-      console.log("Prediction response:", mockPredictionResponse.data);
+      );
+      setPredictionData(response.data);
+      console.log("Prediction response:", response.data);
       alert("Prediction data received successfully!");
     } catch (error) {
-      setPredictionData("Error fetching prediction data");
+      setPredictionData(
+        error.response?.data || "Error fetching prediction data"
+      );
       console.error("Error getting prediction:", error);
       alert("Failed to get prediction data.");
-    } finally {
-      setIsAnalyzing(false);
     }
   };
 
-  return (
+    return (
     <div>
-      <UpperPanel/>
+      <UpperPanel />
 
       <div className="flex min-h-screen py-8 bg-gray-900">
         {/* Left Side - Form */}
@@ -148,7 +122,7 @@ const YieldPrediction = () => {
                       "Upload Image"
                     )}
                   </button>
-                  {uploadedFile && !isUploading && (
+                  {uploadedFile && (
                     <div className="flex items-center text-sm text-green-400">
                       <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -279,7 +253,7 @@ const YieldPrediction = () => {
             {predictionData && typeof predictionData === 'string' && (
               <div className="flex items-center justify-center flex-1">
                 <div className="p-6 text-center bg-gray-700 border border-gray-600 rounded-lg">
-                  <p className="text-lg text-red-400">{predictionData}</p>
+                  <p className="text-lg text-green-400">{predictionData}</p>
                 </div>
               </div>
             )}
